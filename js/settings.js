@@ -65,7 +65,7 @@
       $('rm-resume').hidden = !paused;
       $('rm-pause-today').hidden = paused;
       $('rm-pause-week').hidden = paused;
-      say('rm-pause-state', paused ? c.pausedUntil.slice(5).replace('-', '월 ') + '일까지 쉬고 있어요.' : '쉬고 싶은 날은 알림을 잠시 멈출 수 있어요.');
+      say('rm-pause-state', paused ? Number(c.pausedUntil.slice(5, 7)) + '월 ' + Number(c.pausedUntil.slice(8, 10)) + '일까지 쉬고 있어요.' : '쉬고 싶은 날은 알림을 잠시 멈출 수 있어요.');
       system.checked = c.browser && 'Notification' in window && Notification.permission === 'granted';
       say('rm-days-msg', '');
     }
