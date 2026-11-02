@@ -28,23 +28,9 @@
 
   // ---------- 도우미 ----------
 
-  function h(tag, props, kids) {
-    var el = document.createElement(tag);
-    props = props || {};
-    Object.keys(props).forEach(function (k) {
-      var v = props[k];
-      if (k === 'class') el.className = v;
-      else if (k === 'text') el.textContent = v;
-      else if (k === 'on') Object.keys(v).forEach(function (ev) { el.addEventListener(ev, v[ev]); });
-      else if (v === true) el.setAttribute(k, '');
-      else if (v !== false && v != null) el.setAttribute(k, v);
-    });
-    (kids || []).forEach(function (c) {
-      if (c == null) return;
-      el.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-    });
-    return el;
-  }
+  var h = OneStep.ui.h;
+  var todayStr = OneStep.ui.todayStr;
+  var newId = OneStep.ui.newId;
 
   function icon(id) {
     var span = h('span', { class: 'card-icon', 'aria-hidden': 'true' });
@@ -52,12 +38,6 @@
     return span;
   }
 
-  function pad(n) { return (n < 10 ? '0' : '') + n; }
-  function todayStr() {
-    var d = new Date();
-    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
-  }
-  function newId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
   function go(hash) { location.hash = hash; }
   function dateLabel(s) {
     var p = (s || '').split('-');

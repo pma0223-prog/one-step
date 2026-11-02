@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#3f8a4f">
 <title>오늘의 한걸음</title>
-<link rel="stylesheet" href="css/base.css?v=4">
+<link rel="stylesheet" href="css/base.css?v=5">
 </head>
 <body>
 <main id="view">
@@ -83,10 +83,7 @@
   </section>
 
   <section class="screen" id="screen-welldying" data-route="welldying" data-title="웰다잉" hidden>
-    <h1 tabindex="-1">웰다잉</h1>
-    <p class="tagline">내일을 준비하기</p>
-    <p class="placeholder">삶의 마무리에 대한 생각을 내 속도로 정리하는 공간입니다. 원하지 않으면 언제든 나갈 수 있어요. (준비 중)</p>
-    <a class="back" href="#/">← 홈으로</a>
+    <div id="wd-root"></div>
   </section>
 
   <section class="screen" id="screen-legacy" data-route="legacy" data-title="마음의 유산" hidden>
@@ -117,9 +114,11 @@
   </a>
 </nav>
 
-<script src="js/storage.js?v=4"></script>
-<script src="js/settings.js?v=4"></script>
-<script src="js/areas/wellliving.js?v=4"></script>
-<script src="js/app.js?v=4"></script>
+<script src="js/storage.js?v=5"></script>
+<script src="js/ui.js?v=5"></script>
+<script src="js/settings.js?v=5"></script>
+<script src="js/areas/wellliving.js?v=5"></script>
+<script src="js/areas/welldying.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
 </body>
 </html>
