@@ -1,6 +1,6 @@
 // 화면 전환: 주소의 #/영역 값으로 화면을 보여준다. 영역 사이에 선행 조건은 없다.
 (function () {
-  var ROUTES = ['home', 'wellliving', 'welldying', 'legacy'];
+  var ROUTES = ['home', 'wellliving', 'welldying', 'legacy', 'settings'];
   var BASE_TITLE = '오늘의 한걸음';
 
   function routeFromHash() {
