@@ -46,6 +46,36 @@ h2{font-size:1.1rem;margin:0 0 6px}
 
 .back{display:inline-flex;align-items:center;min-height:56px;padding:0 4px;color:var(--green-dark);font-weight:700}
 
+/* 홈 */
+body{background-image:linear-gradient(180deg,#fdebd2 0,#fbf3e4 220px,rgba(251,248,239,0) 460px);background-repeat:no-repeat}
+#screen-home{padding-top:4px}
+.brand{display:flex;align-items:center;gap:14px}
+.logo{flex:none;display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:linear-gradient(145deg,#5fb06b,#2f7d46);box-shadow:0 4px 12px rgba(47,125,70,.3)}
+.logo svg{width:34px;height:34px;stroke:#fff;stroke-width:2}
+.brand h1{font-size:1.7rem}
+.brand-sub{margin:0;color:var(--muted);font-size:.85rem;line-height:1.4}
+.hello{margin:26px 0 20px}
+.hello-small{margin:0;color:var(--green-dark);font-weight:700;font-size:.95rem}
+.hello-big{margin:2px 0 0;font-size:1.45rem;line-height:1.4;font-weight:700}
+#screen-home .areas{gap:14px}
+#screen-home .card{position:relative;min-height:112px;padding:18px 20px;border:0;border-radius:26px;box-shadow:0 6px 16px rgba(60,80,60,.12)}
+#screen-home .card-living{background:linear-gradient(135deg,#e9f6e5,#cfeacc)}
+#screen-home .card-dying{background:linear-gradient(135deg,#e8eefb,#d3dffa)}
+#screen-home .card-legacy{background:linear-gradient(135deg,#f3eafa,#e3d3f2)}
+#screen-home .card-icon{width:72px;height:72px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(60,80,60,.12)}
+#screen-home .card-icon svg{width:40px;height:40px;stroke-width:1.7}
+#screen-home .card-living svg{stroke:#2f8a4a}
+#screen-home .card-dying svg{stroke:#3b6cb0}
+#screen-home .card-legacy svg{stroke:#7a4f9a}
+#screen-home .card-text{flex:1}
+#screen-home .card-text strong{font-size:1.3rem}
+#screen-home .card-text small{margin-top:2px;font-size:.95rem;color:#3d4a3d}
+.chev{flex:none;font-size:2rem;line-height:1;color:rgba(31,45,31,.45)}
+#screen-home .card:hover{transform:translateY(-1px)}
+#screen-home .card:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+.quiet{margin:22px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
+@media (prefers-reduced-motion:reduce){#screen-home .card:hover{transform:none}}
+
 /* 웰리빙 */
 .subtabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
 .subtabs a{display:flex;align-items:center;justify-content:center;min-height:56px;padding:0 6px;text-align:center;font-size:.85rem;font-weight:700;color:var(--muted);text-decoration:none;background:var(--card);border:2px solid var(--line);border-radius:14px}
@@ -109,7 +139,7 @@ svg{fill:none;stroke:var(--green-dark);stroke-width:1.8;stroke-linecap:round;str
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);height:var(--tab-h);padding-bottom:env(safe-area-inset-bottom);background:var(--card);border-top:2px solid var(--line)}
 .tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:56px;color:var(--muted);text-decoration:none;font-size:.7rem;font-weight:700}
 .tabbar svg{width:26px;height:26px;stroke:currentColor}
-.tabbar a[aria-current="page"]{color:var(--green-dark);background:var(--living)}
+.tabbar a[aria-current="page"]{color:var(--green-dark);background:var(--living);border-radius:16px 16px 0 0}
 .tabbar a:focus-visible{outline:3px solid var(--green);outline-offset:-3px}
 
 @media (prefers-reduced-motion:no-preference){

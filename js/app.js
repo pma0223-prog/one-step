@@ -7,6 +7,16 @@
     return location.hash.replace(/^#\/?/, '').split('/').filter(Boolean).map(decodeURIComponent);
   }
 
+  function greet() {
+    var hour = new Date().getHours();
+    var text = hour >= 5 && hour < 11 ? '좋은 아침이에요!'
+      : hour < 17 && hour >= 11 ? '좋은 오후예요!'
+      : hour >= 17 && hour < 22 ? '편안한 저녁이에요!'
+      : '오늘도 수고하셨어요!';
+    var el = document.getElementById('greeting');
+    if (el) el.textContent = text;
+  }
+
   function render() {
     var parts = partsFromHash();
     var route = ROUTES.indexOf(parts[0]) === -1 ? 'home' : parts[0];
@@ -26,6 +36,8 @@
     document.title = route === 'home'
       ? BASE_TITLE
       : current.getAttribute('data-title') + ' · ' + BASE_TITLE;
+
+    if (route === 'home') greet();
 
     var view = OneStep.views && OneStep.views[route];
     if (view) {

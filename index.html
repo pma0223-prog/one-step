@@ -5,35 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#3f8a4f">
 <title>오늘의 한걸음</title>
-<link rel="stylesheet" href="css/base.css?v=6">
+<link rel="stylesheet" href="css/base.css?v=7">
 </head>
 <body>
 <main id="view">
 
   <section class="screen" id="screen-home" data-route="home" data-title="홈" hidden>
-    <h1 tabindex="-1">오늘의 한걸음</h1>
-    <p class="tagline">오늘이 모여 삶이 완성됩니다.</p>
-    <p class="hint">원하는 곳에서 시작하세요. 어느 영역이든 먼저 열어도 괜찮아요.</p>
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>
+      </span>
+      <div>
+        <h1 tabindex="-1">오늘의 한걸음</h1>
+        <p class="brand-sub">오늘이 모여 삶이 완성됩니다.</p>
+      </div>
+    </div>
+
+    <div class="hello">
+      <p class="hello-small" id="greeting">좋은 하루 되세요!</p>
+      <p class="hello-big">오늘도 한걸음,<br>어떤 일을 해보고 싶으세요?</p>
+    </div>
+
     <nav class="areas" aria-label="영역 선택">
       <a class="card card-living" href="#/wellliving">
         <span class="card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>
         </span>
         <span class="card-text"><strong>웰리빙</strong><small>오늘을 잘 살기</small></span>
+        <span class="chev" aria-hidden="true">›</span>
       </a>
       <a class="card card-dying" href="#/welldying">
         <span class="card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>
         </span>
         <span class="card-text"><strong>웰다잉</strong><small>내일을 준비하기</small></span>
+        <span class="chev" aria-hidden="true">›</span>
       </a>
       <a class="card card-legacy" href="#/legacy">
         <span class="card-icon" aria-hidden="true">
           <svg viewBox="0 0 24 24"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
         </span>
         <span class="card-text"><strong>마음의 유산</strong><small>마음을 남기기</small></span>
+        <span class="chev" aria-hidden="true">›</span>
       </a>
     </nav>
+
+    <p class="quiet">어느 영역이든 먼저 열어도 괜찮아요. 쉬어 가도 좋아요.</p>
     <p class="note">기록은 이 기기의 브라우저에만 저장돼요. 내가 정하기 전에는 어디로도 보내지 않아요.</p>
     <a class="text-link" href="#/settings">내 데이터와 설정</a>
   </section>
@@ -111,12 +128,12 @@
   </a>
 </nav>
 
-<script src="js/storage.js?v=6"></script>
-<script src="js/ui.js?v=6"></script>
-<script src="js/settings.js?v=6"></script>
-<script src="js/areas/wellliving.js?v=6"></script>
-<script src="js/areas/welldying.js?v=6"></script>
-<script src="js/areas/legacy.js?v=6"></script>
-<script src="js/app.js?v=6"></script>
+<script src="js/storage.js?v=7"></script>
+<script src="js/ui.js?v=7"></script>
+<script src="js/settings.js?v=7"></script>
+<script src="js/areas/wellliving.js?v=7"></script>
+<script src="js/areas/welldying.js?v=7"></script>
+<script src="js/areas/legacy.js?v=7"></script>
+<script src="js/app.js?v=7"></script>
 </body>
 </html>
