@@ -62,8 +62,7 @@ h2{font-size:1.1rem;margin:0 0 6px}
 body{background-image:linear-gradient(180deg,#fdebd2 0,#fbf3e4 220px,rgba(251,248,239,0) 460px);background-repeat:no-repeat}
 #screen-home{padding-top:4px}
 .brand{display:flex;align-items:center;gap:14px}
-.logo{flex:none;display:grid;place-items:center;width:60px;height:60px;border-radius:18px;background:linear-gradient(145deg,#5fb06b,#2f7d46);box-shadow:0 4px 12px rgba(47,125,70,.3)}
-.logo svg{width:34px;height:34px;stroke:#fff;stroke-width:2}
+.logo{flex:none;display:block;width:64px;height:64px;border-radius:18px;object-fit:cover;box-shadow:0 4px 12px rgba(47,125,70,.25)}
 .brand h1{font-size:1.7rem}
 .brand-sub{margin:0;color:var(--muted);font-size:.85rem;line-height:1.4}
 .hello{margin:26px 0 20px}
