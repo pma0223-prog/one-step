@@ -353,6 +353,7 @@
     })).concat([
       h('div', { class: 'row' }, [
         h('a', { class: 'btn btn-outline', href: BASE + '/record/edit/' + r.id, text: '고치기' }),
+        h('a', { class: 'btn btn-outline', href: '#/legacy/import/' + r.id, text: '유산에 보관' }),
         h('button', { type: 'button', class: 'btn btn-outline', text: '삭제', on: { click: function () {
           var box = h('div', { class: 'confirm', role: 'alert' }, [
             h('p', { text: '이 기록을 지울까요?' }),

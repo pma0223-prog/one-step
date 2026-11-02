@@ -99,6 +99,11 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outlin
 .small-btn{min-height:48px;margin:0;padding:0 12px;font-size:.85rem}
 .card-dying:hover,.card-dying:focus-visible{border-color:#5b7fb0}
 
+/* 마음의 유산 */
+.pre{white-space:pre-line;overflow-wrap:anywhere}
+.card-legacy:hover,.card-legacy:focus-visible{border-color:#9a72b0}
+#lg-root .subtabs a[aria-current="page"]{background:var(--legacy);border-color:#9a72b0}
+
 svg{fill:none;stroke:var(--green-dark);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,1fr);height:var(--tab-h);padding-bottom:env(safe-area-inset-bottom);background:var(--card);border-top:2px solid var(--line)}
