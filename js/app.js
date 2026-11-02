@@ -17,6 +17,17 @@
     if (el) el.textContent = text;
   }
 
+  // 하단 메뉴: 홈 / 실천하기(웰리빙) / 기록(남긴 경험) / 나의 이야기(마음의 유산)
+  // 웰다잉과 설정은 홈에서 들어가며, 하단 메뉴에서는 강조하지 않는다.
+  function tabFor(route, parts) {
+    if (route === 'home') return 'home';
+    if (route === 'legacy') return 'story';
+    if (route === 'wellliving') {
+      return parts[1] === 'records' || parts[1] === 'record' ? 'records' : 'practice';
+    }
+    return '';
+  }
+
   function render() {
     var parts = partsFromHash();
     var route = ROUTES.indexOf(parts[0]) === -1 ? 'home' : parts[0];
@@ -28,8 +39,9 @@
       if (on) current = el;
     });
 
+    var activeTab = tabFor(route, parts);
     document.querySelectorAll('.tabbar a').forEach(function (a) {
-      if (a.getAttribute('data-tab') === route) a.setAttribute('aria-current', 'page');
+      if (a.getAttribute('data-tab') === activeTab) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     });
 
