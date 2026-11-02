@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#3f8a4f">
 <title>오늘의 한걸음</title>
-<link rel="stylesheet" href="css/base.css?v=3">
+<link rel="stylesheet" href="css/base.css?v=4">
 </head>
 <body>
 <main id="view">
@@ -79,10 +79,7 @@
   </section>
 
   <section class="screen" id="screen-wellliving" data-route="wellliving" data-title="웰리빙" hidden>
-    <h1 tabindex="-1">웰리빙</h1>
-    <p class="tagline">오늘을 잘 살기</p>
-    <p class="placeholder">여섯 가지 생활 영역과 작은 실천 기능이 이곳에 들어옵니다. (준비 중)</p>
-    <a class="back" href="#/">← 홈으로</a>
+    <div id="wl-root"></div>
   </section>
 
   <section class="screen" id="screen-welldying" data-route="welldying" data-title="웰다잉" hidden>
@@ -120,8 +117,9 @@
   </a>
 </nav>
 
-<script src="js/storage.js?v=3"></script>
-<script src="js/settings.js?v=3"></script>
-<script src="js/app.js?v=3"></script>
+<script src="js/storage.js?v=4"></script>
+<script src="js/settings.js?v=4"></script>
+<script src="js/areas/wellliving.js?v=4"></script>
+<script src="js/app.js?v=4"></script>
 </body>
 </html>
