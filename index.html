@@ -3,19 +3,82 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#3f8a4f">
 <title>오늘의 한걸음</title>
 <link rel="stylesheet" href="css/base.css">
 </head>
 <body>
-<main class="home">
-  <h1>오늘의 한걸음</h1>
-  <p class="tagline">오늘이 모여 삶이 완성됩니다.</p>
-  <nav class="areas" aria-label="영역 선택">
-    <a class="card" href="#wellliving">웰리빙<small>오늘을 잘 살기</small></a>
-    <a class="card" href="#welldying">웰다잉<small>내일을 준비하기</small></a>
-    <a class="card" href="#legacy">마음의 유산<small>마음을 남기기</small></a>
-  </nav>
+<main id="view">
+
+  <section class="screen" id="screen-home" data-route="home" data-title="홈" hidden>
+    <h1 tabindex="-1">오늘의 한걸음</h1>
+    <p class="tagline">오늘이 모여 삶이 완성됩니다.</p>
+    <p class="hint">원하는 곳에서 시작하세요. 어느 영역이든 먼저 열어도 괜찮아요.</p>
+    <nav class="areas" aria-label="영역 선택">
+      <a class="card card-living" href="#/wellliving">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>
+        </span>
+        <span class="card-text"><strong>웰리빙</strong><small>오늘을 잘 살기</small></span>
+      </a>
+      <a class="card card-dying" href="#/welldying">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>
+        </span>
+        <span class="card-text"><strong>웰다잉</strong><small>내일을 준비하기</small></span>
+      </a>
+      <a class="card card-legacy" href="#/legacy">
+        <span class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
+        </span>
+        <span class="card-text"><strong>마음의 유산</strong><small>마음을 남기기</small></span>
+      </a>
+    </nav>
+    <p class="note">기록은 이 기기의 브라우저에만 저장돼요. 내가 정하기 전에는 어디로도 보내지 않아요.</p>
+  </section>
+
+  <section class="screen" id="screen-wellliving" data-route="wellliving" data-title="웰리빙" hidden>
+    <h1 tabindex="-1">웰리빙</h1>
+    <p class="tagline">오늘을 잘 살기</p>
+    <p class="placeholder">여섯 가지 생활 영역과 작은 실천 기능이 이곳에 들어옵니다. (준비 중)</p>
+    <a class="back" href="#/">← 홈으로</a>
+  </section>
+
+  <section class="screen" id="screen-welldying" data-route="welldying" data-title="웰다잉" hidden>
+    <h1 tabindex="-1">웰다잉</h1>
+    <p class="tagline">내일을 준비하기</p>
+    <p class="placeholder">삶의 마무리에 대한 생각을 내 속도로 정리하는 공간입니다. 원하지 않으면 언제든 나갈 수 있어요. (준비 중)</p>
+    <a class="back" href="#/">← 홈으로</a>
+  </section>
+
+  <section class="screen" id="screen-legacy" data-route="legacy" data-title="마음의 유산" hidden>
+    <h1 tabindex="-1">마음의 유산</h1>
+    <p class="tagline">마음을 남기기</p>
+    <p class="placeholder">살면서 해 본 경험과 깨달음을 내가 고른 방식으로 기록하는 공간입니다. (준비 중)</p>
+    <a class="back" href="#/">← 홈으로</a>
+  </section>
+
 </main>
+
+<nav class="tabbar" aria-label="주요 메뉴">
+  <a href="#/" data-tab="home">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+    <span>홈</span>
+  </a>
+  <a href="#/wellliving" data-tab="wellliving">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></svg>
+    <span>웰리빙</span>
+  </a>
+  <a href="#/welldying" data-tab="welldying">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>
+    <span>웰다잉</span>
+  </a>
+  <a href="#/legacy" data-tab="legacy">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h7a2 2 0 0 1 2 2v13a2 2 0 0 0-2-2H3z"/><path d="M21 5h-7a2 2 0 0 0-2 2v13a2 2 0 0 1 2-2h7z"/></svg>
+    <span>마음의 유산</span>
+  </a>
+</nav>
+
 <script src="js/app.js"></script>
 </body>
 </html>
