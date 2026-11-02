@@ -51,6 +51,43 @@
     if (heading) heading.focus({ preventScroll: true });
   }
 
+  // 시작 화면: 방문마다 한 번만 보여 주고, 바로 특정 화면 주소로 들어오면 건너뛴다.
+  function initSplash() {
+    var splash = document.getElementById('splash');
+    var start = document.getElementById('splash-start');
+    if (!splash || !start) return;
+    var inert = [document.getElementById('view'), document.querySelector('.tabbar')];
+
+    function setInert(on) {
+      inert.forEach(function (el) {
+        if (!el) return;
+        if (on) el.setAttribute('inert', '');
+        else el.removeAttribute('inert');
+      });
+    }
+
+    function seen() {
+      try { return sessionStorage.getItem('onestep:splash') === '1'; } catch (e) { return false; }
+    }
+
+    var deepLink = location.hash && location.hash !== '#' && location.hash !== '#/';
+    if (seen() || deepLink) { splash.hidden = true; return; }
+
+    setInert(true);
+    start.focus();
+    start.addEventListener('click', function () {
+      try { sessionStorage.setItem('onestep:splash', '1'); } catch (e) { /* 저장할 수 없어도 계속 진행 */ }
+      splash.classList.add('leaving');
+      setInert(false);
+      setTimeout(function () {
+        splash.hidden = true;
+        var heading = document.querySelector('.screen:not([hidden]) h1');
+        if (heading) heading.focus({ preventScroll: true });
+      }, 350);
+    });
+  }
+
   window.addEventListener('hashchange', render);
   render();
+  initSplash();
 })();
