@@ -73,6 +73,19 @@ body{background-image:linear-gradient(180deg,#fdebd2 0,#fbf3e4 220px,rgba(251,24
 .chev{flex:none;font-size:2rem;line-height:1;color:rgba(31,45,31,.45)}
 #screen-home .card:hover{transform:translateY(-1px)}
 #screen-home .card:focus-visible{outline:3px solid var(--green);outline-offset:3px}
+.shortcuts{margin-top:26px}
+.shortcuts h2{margin:0 0 10px;font-size:1.05rem}
+.shortcut-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.shortcut{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:104px;padding:10px 4px;border-radius:20px;color:var(--ink);text-align:center;text-decoration:none;font-size:.85rem;font-weight:700;line-height:1.3;box-shadow:0 3px 10px rgba(60,80,60,.10)}
+.s-icon{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:#fff}
+.s-icon svg{width:28px;height:28px;stroke-width:1.8}
+.shortcut:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.s-health{background:#fde4e1}.s-health svg{stroke:#d9534f}
+.s-money{background:#fdf0cf}.s-money svg{stroke:#b8860b}
+.s-mind{background:#e3f1e3}.s-mind svg{stroke:#2f8a4a}
+.s-relation{background:#e3ecf7}.s-relation svg{stroke:#3b6cb0}
+.s-dream{background:#f1e8f5}.s-dream svg{stroke:#7a4f9a}
+.s-share{background:#fde6d6}.s-share svg{stroke:#d9732a}
 .quiet{margin:22px 0 0;text-align:center;color:var(--muted);font-size:.9rem}
 @media (prefers-reduced-motion:reduce){#screen-home .card:hover{transform:none}}
 
