@@ -62,7 +62,7 @@ h2{font-size:1.1rem;margin:0 0 6px}
 body{background-image:linear-gradient(180deg,#fdebd2 0,#fbf3e4 220px,rgba(251,248,239,0) 460px);background-repeat:no-repeat}
 .home-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .hello-small{margin:0;font-weight:700;font-size:1.1rem}
-.hello-big{margin:6px 0 0;font-size:1.4rem;line-height:1.4;font-weight:700;color:#1d4b73}
+.hello-big{margin:6px 0 0;font-size:1.3rem;line-height:1.4;font-weight:700;color:#1d4b73;text-wrap:balance}
 .bell{flex:none;display:grid;place-items:center;width:56px;height:56px;border-radius:50%;background:#fff;box-shadow:0 3px 10px rgba(60,80,60,.14)}
 .bell svg{width:28px;height:28px;stroke:#e0584f;fill:#fde9e7;stroke-width:1.8}
 .bell:focus-visible{outline:3px solid var(--green);outline-offset:2px}
