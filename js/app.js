@@ -95,6 +95,7 @@
         splash.hidden = true;
         var heading = document.querySelector('.screen:not([hidden]) h1');
         if (heading) heading.focus({ preventScroll: true });
+        if (OneStep.reminders) OneStep.reminders.check();
       }, 350);
     });
   }

@@ -38,6 +38,106 @@
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
 
+  var refreshReminder = null;
+
+  function initReminders() {
+    var R = OneStep.reminders;
+    var enabled = $('rm-enabled');
+    var options = $('rm-options');
+    var time = $('rm-time');
+    var system = $('rm-system');
+    var chips = [].slice.call(document.querySelectorAll('#rm-days .chip'));
+
+    function say(id, text) { $(id).textContent = text; }
+
+    function render() {
+      var c = R.getConfig();
+      enabled.checked = c.enabled;
+      options.hidden = !c.enabled;
+      say('rm-state', c.enabled
+        ? '켜져 있어요. 정한 시간 이후 앱을 열면 한 번 알려 드려요.'
+        : '꺼져 있어요. 원할 때만 켜세요.');
+      time.value = c.time;
+      chips.forEach(function (chip) {
+        chip.setAttribute('aria-pressed', c.days.indexOf(Number(chip.getAttribute('data-day'))) !== -1 ? 'true' : 'false');
+      });
+      var paused = R.isPaused(c);
+      $('rm-resume').hidden = !paused;
+      $('rm-pause-today').hidden = paused;
+      $('rm-pause-week').hidden = paused;
+      say('rm-pause-state', paused ? c.pausedUntil.slice(5).replace('-', '월 ') + '일까지 쉬고 있어요.' : '쉬고 싶은 날은 알림을 잠시 멈출 수 있어요.');
+      system.checked = c.browser && 'Notification' in window && Notification.permission === 'granted';
+      say('rm-days-msg', '');
+    }
+
+    enabled.addEventListener('change', function () {
+      R.update(function (c) { c.enabled = enabled.checked; });
+      render();
+    });
+
+    time.addEventListener('change', function () {
+      if (!time.value) { render(); return; }
+      R.update(function (c) { c.time = time.value; });
+    });
+
+    chips.forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        var day = Number(chip.getAttribute('data-day'));
+        var c = R.getConfig();
+        var has = c.days.indexOf(day) !== -1;
+        if (has && c.days.length === 1) {
+          say('rm-days-msg', '요일을 하나는 남겨 주세요. 알림을 끄려면 위의 「알림 받기」를 꺼 주세요.');
+          return;
+        }
+        R.update(function (x) {
+          x.days = has ? x.days.filter(function (d) { return d !== day; }) : x.days.concat(day).sort();
+        });
+        render();
+        chip.focus();
+      });
+    });
+
+    $('rm-pause-today').addEventListener('click', function () {
+      R.update(function (c) { c.pausedUntil = R.dayStr(0); });
+      render();
+      $('rm-resume').focus();
+    });
+    $('rm-pause-week').addEventListener('click', function () {
+      R.update(function (c) { c.pausedUntil = R.dayStr(6); });
+      render();
+      $('rm-resume').focus();
+    });
+    $('rm-resume').addEventListener('click', function () {
+      R.update(function (c) { c.pausedUntil = ''; });
+      render();
+    });
+
+    system.addEventListener('change', function () {
+      if (!system.checked) {
+        R.update(function (c) { c.browser = false; });
+        say('rm-system-msg', '기기 알림창은 끄고, 앱 안에서만 알려 드려요.');
+        return;
+      }
+      R.requestSystem().then(function (result) {
+        if (result === 'granted') {
+          R.update(function (c) { c.browser = true; });
+          say('rm-system-msg', '앱이 열려 있을 때 기기 알림창으로도 알려 드려요. 기기에 따라 안 뜰 수 있어요.');
+        } else {
+          system.checked = false;
+          R.update(function (c) { c.browser = false; });
+          say('rm-system-msg', result === 'unsupported'
+            ? '이 기기와 브라우저에서는 기기 알림창을 쓸 수 없어요. 앱 안에서 알려 드려요.'
+            : '기기 알림이 허용되지 않았어요. 브라우저 설정에서 허용하면 쓸 수 있어요.');
+        }
+      });
+    });
+
+    $('rm-ics').addEventListener('click', function () { R.downloadIcs(); });
+
+    refreshReminder = render;
+    render();
+  }
+
   function init() {
     var size = currentSettings().size === 'large' ? 'large' : 'normal';
     applySize(size);
@@ -75,9 +175,11 @@
       $('clear-confirm').hidden = true;
       $('btn-clear').hidden = false;
       $('clear-msg').textContent = '모든 기록을 지웠어요.';
+      if (refreshReminder) refreshReminder();
     });
 
     renderStatus();
+    initReminders();
   }
 
   init();
