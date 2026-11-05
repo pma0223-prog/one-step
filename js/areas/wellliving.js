@@ -103,9 +103,13 @@
     return [h('h1', { tabindex: '-1', text: title }), sub ? h('p', { class: 'tagline', text: sub }) : null];
   }
 
+  // 화면을 다시 그릴 때마다 머리 영역(색 배경+아이콘)을 입힌다.
+  var currentHead = 'living';
+
   function show(nodes) {
     root.textContent = '';
     nodes.forEach(function (n) { if (n) root.appendChild(n); });
+    OneStep.ui.decorate(root, currentHead, currentHead);
   }
 
   function saveOrWarn(key, value, msgEl) {
@@ -136,44 +140,150 @@
 
   // ---------- B2 실천 선택 ----------
 
+  // 내가 고른 가치와 보기 방식은 이 기기에만 저장한다.
+  function wlPrefs() {
+    var p = storage.get('settings', {}).wl || {};
+    return { values: p.values || {}, light: !!p.light };
+  }
+
+  function saveWlPrefs(p) {
+    var s = storage.get('settings', {});
+    s.wl = p;
+    storage.set('settings', s);
+  }
+
+  function findValue(area, id) {
+    var found = null;
+    (area.values || []).forEach(function (v) { if (v.id === id) found = v; });
+    return found;
+  }
+
+  // 영역에서 고른 가치의 이름. 가치가 없는 영역이나 '모두 보기'이면 빈 글자.
+  function valueLabelFor(areaId) {
+    var area = areaById(areaId);
+    if (!area || !area.values) return '';
+    var chosen = wlPrefs().values[areaId];
+    if (!chosen || chosen === 'all') return '';
+    if (chosen.indexOf('custom:') === 0) return chosen.slice(7);
+    var v = findValue(area, chosen);
+    return v ? v.name : '';
+  }
+
+  var customOpen = false;
+
   function viewArea(areaId) {
     var area = areaById(areaId);
     if (!area) return go(BASE);
-    var start = offsets[areaId] || 0;
-    var shown = [];
-    for (var i = 0; i < Math.min(PAGE, area.items.length); i++) shown.push(area.items[(start + i) % area.items.length]);
+    var prefs = wlPrefs();
+    var hasValues = !!(area.values && area.values.length);
+    var chosen = hasValues ? prefs.values[areaId] : 'all';
+    var pool = area.items;
+    if (hasValues && chosen && chosen !== 'all' && chosen.indexOf('custom:') !== 0) {
+      var v = findValue(area, chosen);
+      if (v) pool = area.items.filter(function (it) { return it.value === v.id; });
+      else chosen = undefined;
+    }
+    var showList = !hasValues || !!chosen;
 
-    var list = h('ul', { class: 'pick-list' }, shown.map(function (it) {
-      return h('li', {}, [
-        h('a', { class: 'pick', href: BASE + '/set/' + area.id + '/' + it.id }, [
-          h('span', { text: it.text }),
-          h('small', { text: '고르기' })
-        ])
-      ]);
-    }));
+    function setValue(value, focusSel) {
+      prefs.values[areaId] = value;
+      saveWlPrefs(prefs);
+      offsets[areaId] = 0;
+      customOpen = false;
+      viewArea(areaId);
+      var el = root.querySelector(focusSel);
+      if (el) el.focus();
+    }
 
-    var more = area.items.length > PAGE
-      ? h('button', { type: 'button', class: 'btn btn-outline', text: '다른 제안 보기', on: { click: function () {
-          offsets[areaId] = (start + PAGE) % area.items.length;
-          viewArea(areaId);
-          var first = root.querySelector('.pick');
-          if (first) first.focus();
-        } } })
-      : null;
+    var nodes = [h('h1', { tabindex: '-1', text: area.name }), h('p', { class: 'tagline', text: hasValues ? '소중히 여기는 가치부터 골라 보세요.' : '오늘 해 볼 작은 일을 골라 보세요.' })];
 
-    show([
-      h('h1', { tabindex: '-1', text: area.name }),
-      h('p', { class: 'tagline', text: '오늘 해 볼 작은 일을 골라 보세요.' }),
-      list,
-      h('div', { class: 'row' }, [
+    if (hasValues) {
+      var isCustom = !!chosen && chosen.indexOf('custom:') === 0;
+      var chips = area.values.map(function (val) {
+        return h('button', { type: 'button', class: 'chip', 'data-value': val.id, 'aria-pressed': chosen === val.id ? 'true' : 'false', text: val.name, on: { click: function () {
+          setValue(val.id, '[data-value="' + val.id + '"]');
+        } } });
+      });
+      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'custom', 'aria-pressed': isCustom ? 'true' : 'false', text: '내가 적기', on: { click: function () {
+        customOpen = true;
+        viewArea(areaId);
+        var f = root.querySelector('#v-custom');
+        if (f) f.focus();
+      } } }));
+      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'all', 'aria-pressed': chosen === 'all' ? 'true' : 'false', text: '모두 보기', on: { click: function () {
+        setValue('all', '[data-value="all"]');
+      } } }));
+
+      var picker = [h('h2', { text: '1. 소중히 여기는 가치' }), h('div', { class: 'chips', role: 'group', 'aria-label': '가치 선택' }, chips)];
+      if (customOpen || isCustom) {
+        var input = h('input', { type: 'text', id: 'v-custom', maxlength: '20', value: isCustom ? chosen.slice(7) : '', placeholder: '예: 정직, 감사' });
+        var err = h('p', { class: 'small error', role: 'alert' });
+        picker.push(h('form', { novalidate: true, on: { submit: function (e) {
+          e.preventDefault();
+          var text = input.value.trim();
+          if (!text) { err.textContent = '가치를 한 단어로 적어 주세요.'; input.focus(); return; }
+          setValue('custom:' + text, '.pick');
+        } } }, [
+          h('label', { for: 'v-custom', text: '내가 소중히 여기는 가치' }), input, err,
+          h('button', { type: 'submit', class: 'btn btn-outline', text: '이 가치로 보기' })
+        ]));
+      }
+      nodes.push(h('div', { class: 'panel' }, picker));
+    }
+
+    if (showList) {
+      var key = areaId + '|' + chosen;
+      var start = (offsets[areaId] || 0) % Math.max(pool.length, 1);
+      var shown = [];
+      for (var i = 0; i < Math.min(PAGE, pool.length); i++) shown.push(pool[(start + i) % pool.length]);
+
+      var label = valueLabelFor(areaId);
+      var head = hasValues
+        ? '2. ' + (label ? '「' + label + '」에 어울리는 작은 실천' : '작은 실천')
+        : null;
+      if (head) nodes.push(h('h2', { text: head }));
+
+      nodes.push(h('ul', { class: 'pick-list' }, shown.map(function (it) {
+        return h('li', {}, [
+          h('a', { class: 'pick', href: BASE + '/set/' + area.id + '/' + it.id + (prefs.light ? '/small' : ''), 'data-key': key }, [
+            h('span', { text: prefs.light ? it.small : it.text }),
+            h('small', { text: '고르기' })
+          ])
+        ]);
+      })));
+
+      var more = pool.length > PAGE
+        ? h('button', { type: 'button', class: 'btn btn-outline', text: '다른 제안 보기', on: { click: function () {
+            offsets[areaId] = (start + PAGE) % pool.length;
+            viewArea(areaId);
+            var first = root.querySelector('.pick');
+            if (first) first.focus();
+          } } })
+        : null;
+      var light = h('button', { type: 'button', class: 'chip', 'aria-pressed': prefs.light ? 'true' : 'false', text: '오늘은 가볍게 보기', on: { click: function () {
+        prefs.light = !prefs.light;
+        saveWlPrefs(prefs);
+        viewArea(areaId);
+        var again = root.querySelector('[data-light]');
+        if (again) again.focus();
+      } } });
+      light.setAttribute('data-light', '1');
+
+      nodes.push(h('div', { class: 'row' }, [
         more,
         h('a', { class: 'btn btn-outline', href: BASE + '/set/' + area.id + '/custom', text: '직접 입력' }),
         h('a', { class: 'btn btn-outline', href: BASE + '/rest', text: '오늘은 쉬기' })
-      ]),
-      h('a', { class: 'back', href: BASE, text: '← 웰리빙으로' })
-    ]);
-  }
+      ]));
+      nodes.push(h('p', { class: 'small', text: '시간이나 몸이 힘든 날에는 더 가벼운 버전으로 볼 수 있어요.' }));
+      nodes.push(h('div', { class: 'chips' }, [light]));
+    } else {
+      nodes.push(h('p', { class: 'placeholder', text: '가치를 하나 고르면, 그 가치에 어울리는 작은 실천을 보여 드려요. 정하기 어렵다면 「모두 보기」를 눌러도 돼요.' }));
+      nodes.push(h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/rest', text: '오늘은 쉬기' })]));
+    }
 
+    nodes.push(h('a', { class: 'back', href: BASE, text: '← 웰리빙으로' }));
+    show(nodes);
+  }
   function viewRest() {
     show([
       h('h1', { tabindex: '-1', text: '오늘은 쉬어요' }),
@@ -219,7 +329,7 @@
       if (!text) { msg.textContent = '할 일을 한 줄 적어 주세요.'; textInput.focus(); return; }
       var list = plans();
       list.push({
-        id: newId(), areaId: areaId, actionId: action ? action.id : 'custom', text: text,
+        id: newId(), areaId: areaId, actionId: action ? action.id : 'custom', value: valueLabelFor(areaId), text: text,
         date: date.value || todayStr(), time: time.value || '',
         memo: memo.value.trim(), status: 'planned', createdAt: new Date().toISOString()
       });
@@ -260,7 +370,7 @@
     var canCheck = p.status === 'done' || p.status === 'partial';
     return h('li', { class: 'item', 'data-plan': p.id }, [
       h('p', { class: 'item-title', text: p.text }),
-      h('p', { class: 'small', text: areaName(p.areaId) + ' · ' + when }),
+      h('p', { class: 'small', text: areaName(p.areaId) + (p.value ? ' · ' + p.value : '') + ' · ' + when }),
       p.memo ? h('p', { class: 'small', text: p.memo }) : null,
       statusRow,
       p.check ? h('p', { class: 'check-summary', text: '돌아보기: ' + checkSummary(p.check) }) : null,
@@ -553,6 +663,7 @@
     }
     load().then(function () {
       var a = parts[0];
+      currentHead = headFor(parts);
       if (!a) viewHome();
       else if (a === 'area') viewArea(parts[1]);
       else if (a === 'rest') viewRest();
@@ -564,8 +675,6 @@
       else if (a === 'record' && parts[1] === 'edit') viewRecord(null, parts[2]);
       else if (a === 'record') viewRecord(parts[1], null);
       else viewHome();
-      var head = headFor(parts);
-      OneStep.ui.decorate(root, head, head);
       var heading = root.querySelector('h1');
       if (heading) heading.focus({ preventScroll: true });
       window.scrollTo(0, 0);

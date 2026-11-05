@@ -144,6 +144,87 @@
     render();
   }
 
+  // 내보낸 파일 불러오기: 파일을 고르면 내용을 먼저 보여 주고, 내가 정한 방법으로만 가져온다.
+  function initImport() {
+    var backup = OneStep.backup;
+    var file = $('imp-file');
+    var preview = $('imp-preview');
+    var pending = null;
+
+    var MERGE_HELP = '지금 있는 기록은 그대로 두고, 없는 것만 더해요. 같은 기록은 한 번만 들어가요.';
+    var REPLACE_HELP = '지금 있는 실천 계획·기록·답·유산은 지워지고 파일의 내용으로 바뀌어요.';
+
+    function say(text) { $('imp-msg').textContent = text; }
+
+    // 끝낼 때마다 안전한 「합치기」로 되돌려, 다음번에 실수로 기록을 바꾸지 않게 한다.
+    function reset() {
+      pending = null;
+      preview.hidden = true;
+      $('imp-confirm').hidden = true;
+      $('imp-go').hidden = false;
+      file.value = '';
+      document.querySelector('input[name="imp-mode"][value="merge"]').checked = true;
+      $('imp-mode-help').textContent = MERGE_HELP;
+    }
+
+    function run(mode) {
+      var ok = backup.apply(pending.data, mode);
+      reset();
+      say(ok
+        ? '불러왔어요. 「실천하기」, 「기록」, 「나의 이야기」에서 확인할 수 있어요.'
+        : '일부를 저장하지 못했어요. 브라우저 저장 공간이 부족할 수 있어요.');
+    }
+
+    function mode() {
+      var checked = document.querySelector('input[name="imp-mode"]:checked');
+      return checked ? checked.value : 'merge';
+    }
+
+    file.addEventListener('change', function () {
+      say('');
+      preview.hidden = true;
+      pending = null;
+      var f = file.files && file.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        var result = backup.parse(String(reader.result));
+        if (result.error) { say(result.error); return; }
+        pending = result;
+        $('imp-summary').textContent = '이 파일에는 ' + result.summary.join(', ') + '가 들어 있어요.' +
+          (result.skipped ? ' 읽을 수 없는 항목 ' + result.skipped + '개는 건너뛰어요.' : '');
+        preview.hidden = false;
+      };
+      reader.onerror = function () { say('파일을 읽지 못했어요. 다시 골라 주세요.'); };
+      reader.readAsText(f);
+    });
+
+    document.querySelectorAll('input[name="imp-mode"]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        $('imp-mode-help').textContent = mode() === 'replace' ? REPLACE_HELP : MERGE_HELP;
+      });
+    });
+
+    $('imp-go').addEventListener('click', function () {
+      if (!pending) return;
+      if (mode() === 'replace') {
+        $('imp-confirm').hidden = false;
+        $('imp-go').hidden = true;
+        $('imp-confirm-no').focus();
+        return;
+      }
+      run('merge');
+    });
+
+    $('imp-cancel').addEventListener('click', function () { reset(); say(''); file.focus(); });
+    $('imp-confirm-no').addEventListener('click', function () {
+      $('imp-confirm').hidden = true;
+      $('imp-go').hidden = false;
+      $('imp-go').focus();
+    });
+    $('imp-confirm-yes').addEventListener('click', function () { if (pending) run('replace'); });
+  }
+
   function init() {
     var size = validSize(currentSettings().size);
     applySize(size);
@@ -186,6 +267,7 @@
 
     renderStatus();
     initReminders();
+    initImport();
   }
 
   init();

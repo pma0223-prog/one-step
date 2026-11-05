@@ -93,9 +93,11 @@
 
   // ---------- 공통 조각 ----------
 
+  // 화면을 다시 그릴 때마다 머리 영역(색 배경+아이콘)을 입힌다.
   function show(nodes) {
     root.textContent = '';
     nodes.forEach(function (n) { if (n) root.appendChild(n); });
+    OneStep.ui.decorate(root, 'legacy', 'legacy');
   }
 
   function tabs(current) {

@@ -131,6 +131,8 @@ a.btn{display:inline-flex;align-items:center;text-decoration:none}
 label{display:block;margin:16px 0 4px;font-weight:700}
 input[type=text],input[type=date],input[type=time],textarea{display:block;width:100%;min-height:56px;padding:10px 14px;font:inherit;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:16px}
 textarea{resize:vertical}
+input[type=file]{display:block;width:100%;min-height:56px;padding:12px;font:inherit;color:var(--ink);background:#fff;border:2px dashed var(--line);border-radius:16px}
+input[type=file]:focus-visible{outline:3px solid var(--green);outline-offset:1px;border-color:var(--green)}
 input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outline-offset:1px;border-color:var(--green)}
 .error{color:#a23b2f;font-weight:700}
 .choice{display:flex;gap:12px;flex-wrap:wrap}
