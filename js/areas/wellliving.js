@@ -57,7 +57,7 @@
   function load() {
     if (content) return Promise.resolve(content);
     if (!loading) {
-      loading = fetch('content/actions.json?v=4')
+      loading = fetch('content/actions.json?v=5')
         .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
         .then(function (j) { content = j; return j; })
         .catch(function (e) { loading = null; throw e; });
