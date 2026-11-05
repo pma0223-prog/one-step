@@ -142,6 +142,16 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outlin
 .chip:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .confirm{margin-top:8px;padding:12px;background:#fdf1ef;border-radius:12px}
 
+/* 돌아보기(자기점검) */
+.fieldset{margin:14px 0 0;padding:0;border:0}
+.fieldset legend{margin:0 0 6px;padding:0;font-weight:700}
+.choice-row{display:flex;align-items:center;gap:12px;min-height:56px;margin:6px 0;padding:0 16px;font-weight:400;background:#fff;border:2px solid var(--line);border-radius:14px;cursor:pointer}
+.choice-row input{flex:none;width:24px;height:24px;accent-color:var(--green)}
+.choice-row:has(input:checked){border-color:var(--green);background:var(--living)}
+.choice-row:has(input:focus-visible){outline:3px solid var(--green);outline-offset:2px}
+.check-summary{margin:8px 0;padding:10px 14px;background:var(--living);border-radius:12px;font-size:.9rem}
+.review-label{margin:10px 0 0;font-weight:700;color:var(--green-dark)}
+
 /* 웰다잉 */
 .plain{margin:8px 0 0;padding-left:1.2em}
 .plain li{margin:4px 0}

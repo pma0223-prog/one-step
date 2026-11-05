@@ -12,6 +12,29 @@
     { id: 'skipped', label: '하지 않기로 함' }
   ];
 
+  // 자기점검: 점수나 합계 없이, 해 본 일이 나에게 맞았는지만 살핀다.
+  var CHECK_FEEL = [
+    { id: 'good', label: '편안했어요' },
+    { id: 'ok', label: '보통이었어요' },
+    { id: 'hard', label: '조금 힘들었어요' }
+  ];
+  var CHECK_SIZE = [
+    { id: 'fit', label: '딱 맞았어요' },
+    { id: 'smaller', label: '더 작게 하고 싶어요' },
+    { id: 'bigger', label: '더 해 봐도 괜찮아요' }
+  ];
+  var CHECK_NEXT = [
+    { id: 'again', label: '또 해 보고 싶어요' },
+    { id: 'change', label: '다른 걸로 바꿔 보고 싶어요' },
+    { id: 'rest', label: '잠시 쉬고 싶어요' }
+  ];
+
+  function labelOf(list, id) {
+    var found = '';
+    list.forEach(function (o) { if (o.id === id) found = o.label; });
+    return found;
+  }
+
   var ICONS = {
     health: '<path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/>',
     money: '<circle cx="12" cy="12" r="8"/><path d="M12 7v10M9.5 9.5h4a1.5 1.5 0 0 1 0 3h-3a1.5 1.5 0 0 0 0 3h4"/>',
@@ -161,14 +184,15 @@
 
   // ---------- B3 실천 설정 ----------
 
-  function viewSet(areaId, actionId) {
+  function viewSet(areaId, actionId, mode) {
     var area = areaById(areaId);
     if (!area) return go(BASE);
     var action = null;
     area.items.forEach(function (it) { if (it.id === actionId) action = it; });
     if (!action && actionId !== 'custom') return go(BASE + '/area/' + areaId);
 
-    var textInput = h('input', { type: 'text', id: 'f-text', maxlength: '80', value: action ? action.text : '', placeholder: '예: 저녁 먹고 10분 걷기' });
+    var startSmall = !!action && mode === 'small';
+    var textInput = h('input', { type: 'text', id: 'f-text', maxlength: '80', value: action ? (startSmall ? action.small : action.text) : '', placeholder: '예: 저녁 먹고 10분 걷기' });
     var date = h('input', { type: 'date', id: 'f-date', value: todayStr() });
     var time = h('input', { type: 'time', id: 'f-time' });
     var memo = h('textarea', { id: 'f-memo', rows: '3', maxlength: '300', placeholder: '하고 싶은 방식이나 떠오른 생각 (비워 둬도 돼요)' });
@@ -176,8 +200,8 @@
 
     var smaller = null;
     if (action) {
-      var small = false;
-      smaller = h('button', { type: 'button', class: 'btn btn-outline', text: '더 작게 만들기', on: { click: function () {
+      var small = startSmall;
+      smaller = h('button', { type: 'button', class: 'btn btn-outline', text: small ? '처음 제안으로' : '더 작게 만들기', on: { click: function () {
         small = !small;
         textInput.value = small ? action.small : action.text;
         smaller.textContent = small ? '처음 제안으로' : '더 작게 만들기';
@@ -194,7 +218,7 @@
       if (!text) { msg.textContent = '할 일을 한 줄 적어 주세요.'; textInput.focus(); return; }
       var list = plans();
       list.push({
-        id: newId(), areaId: areaId, text: text,
+        id: newId(), areaId: areaId, actionId: action ? action.id : 'custom', text: text,
         date: date.value || todayStr(), time: time.value || '',
         memo: memo.value.trim(), status: 'planned', createdAt: new Date().toISOString()
       });
@@ -232,16 +256,117 @@
     }));
 
     var when = dateLabel(p.date) + (p.time ? ' ' + p.time : '');
+    var canCheck = p.status === 'done' || p.status === 'partial';
     return h('li', { class: 'item', 'data-plan': p.id }, [
       h('p', { class: 'item-title', text: p.text }),
       h('p', { class: 'small', text: areaName(p.areaId) + ' · ' + when }),
       p.memo ? h('p', { class: 'small', text: p.memo }) : null,
       statusRow,
+      p.check ? h('p', { class: 'check-summary', text: '돌아보기: ' + checkSummary(p.check) }) : null,
       h('div', { class: 'row' }, [
+        canCheck ? h('a', { class: 'btn', href: BASE + '/check/' + p.id, text: p.check ? '돌아보기 고치기' : '돌아보기' }) : null,
         h('a', { class: 'btn btn-outline', href: BASE + '/record/' + p.id, text: '기록하기' }),
         h('button', { type: 'button', class: 'btn btn-outline', text: '삭제', on: { click: function () { confirmRemovePlan(p); } } })
       ])
     ]);
+  }
+
+  function checkSummary(c) {
+    return [labelOf(CHECK_FEEL, c.feel), labelOf(CHECK_SIZE, c.size), labelOf(CHECK_NEXT, c.next), c.note]
+      .filter(Boolean).join(' · ');
+  }
+
+  // ---------- 자기점검: 해 본 일이 나에게 맞았는지 돌아보기 ----------
+
+  function choiceGroup(name, legend, options, current) {
+    var wrap = h('fieldset', { class: 'fieldset' }, [h('legend', { text: legend })].concat(options.map(function (o) {
+      var input = h('input', { type: 'radio', name: name, value: o.id });
+      if (current === o.id) input.checked = true;
+      return h('label', { class: 'choice-row' }, [input, h('span', { text: o.label })]);
+    })));
+    return {
+      node: wrap,
+      value: function () {
+        var c = wrap.querySelector('input:checked');
+        return c ? c.value : '';
+      }
+    };
+  }
+
+  function findPlan(id) {
+    var found = null;
+    plans().forEach(function (p) { if (p.id === id) found = p; });
+    return found;
+  }
+
+  function viewCheck(planId) {
+    var plan = findPlan(planId);
+    if (!plan) return go(BASE + '/plan');
+    var c = plan.check || {};
+    var g1 = choiceGroup('c-feel', '해 보니 어땠나요?', CHECK_FEEL, c.feel);
+    var g2 = choiceGroup('c-size', '이 크기가 나에게 맞았나요?', CHECK_SIZE, c.size);
+    var g3 = choiceGroup('c-next', '다음에는 어떻게 할까요?', CHECK_NEXT, c.next);
+    var note = h('textarea', { id: 'c-note', rows: '2', maxlength: '200', text: c.note || '' });
+    var msg = h('p', { class: 'small error', role: 'alert' });
+
+    var form = h('form', { novalidate: true, on: { submit: function (e) {
+      e.preventDefault();
+      var vals = { feel: g1.value(), size: g2.value(), next: g3.value(), note: note.value.trim() };
+      if (!vals.feel && !vals.size && !vals.next && !vals.note) {
+        msg.textContent = '하나만 골라도 괜찮아요. 하고 싶지 않다면 「건너뛰기」를 눌러 주세요.';
+        return;
+      }
+      var list = plans();
+      list.forEach(function (x) {
+        if (x.id === plan.id) { x.check = { feel: vals.feel, size: vals.size, next: vals.next, note: vals.note, at: new Date().toISOString() }; }
+      });
+      if (saveOrWarn('plans', list, msg)) go(BASE + '/checked/' + plan.id);
+    } } }, [
+      h('p', { class: 'context', text: '「' + plan.text + '」' }),
+      h('p', { class: 'small', text: '맞고 틀린 답은 없어요. 해 본 일이 나에게 어땠는지만 가볍게 살펴봐요. 고르고 싶은 것만 골라도 돼요.' }),
+      g1.node, g2.node, g3.node,
+      h('label', { for: 'c-note', text: '한 줄 메모 (선택)' }), note,
+      msg,
+      h('div', { class: 'row' }, [
+        h('button', { type: 'submit', class: 'btn', text: '저장' }),
+        h('a', { class: 'btn btn-outline', href: BASE + '/plan', text: '건너뛰기' })
+      ])
+    ]);
+
+    show([h('h1', { tabindex: '-1', text: '돌아보기' }), form]);
+  }
+
+  // 점검 결과에 따라 다음 걸음을 제안한다. 점수나 평가는 하지 않는다.
+  function viewCheckDone(planId) {
+    var plan = findPlan(planId);
+    if (!plan || !plan.check) return go(BASE + '/plan');
+    var c = plan.check;
+    var actionKnown = plan.actionId && plan.actionId !== 'custom';
+    var setBase = BASE + '/set/' + plan.areaId + '/' + (actionKnown ? plan.actionId : 'custom');
+    var steps = [];
+
+    if (c.size === 'smaller') {
+      steps.push(h('a', { class: 'btn', href: actionKnown ? setBase + '/small' : setBase, text: '더 작게 다시 담기' }));
+    }
+    if (c.next === 'again' || c.size === 'bigger') {
+      steps.push(h('a', { class: 'btn', href: setBase, text: '같은 일 다시 담기' }));
+    }
+    if (c.next === 'change') {
+      steps.push(h('a', { class: 'btn', href: BASE + '/area/' + plan.areaId, text: '다른 제안 보기' }));
+    }
+
+    var tips = [];
+    if (c.next === 'rest') tips.push('쉬는 것도 좋은 선택이에요. 준비가 되면 그때 다시 시작해요.');
+    if (c.feel === 'hard' && c.size !== 'smaller') tips.push('조금 힘들었다면 일의 크기를 더 줄여 보는 것도 방법이에요.');
+    if (!steps.length && !tips.length) tips.push('돌아본 것만으로도 충분해요.');
+
+    show([].concat(
+      header('돌아보기를 남겼어요', plan.text),
+      [h('p', { class: 'check-summary', text: checkSummary(c) })],
+      tips.map(function (t) { return h('p', { text: t }); }),
+      steps.length ? [h('h2', { text: '이어서 해 볼까요?' }), h('div', { class: 'row' }, steps)] : [],
+      [h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/plan', text: '나의 계획으로' })])]
+    ));
   }
 
   function confirmRemovePlan(p) {
@@ -337,8 +462,42 @@
       ? [h('ul', { class: 'items' }, all.map(recordItem))]
       : [h('p', { class: 'placeholder', text: '아직 남긴 경험이 없어요. 기록은 하고 싶을 때만 남겨도 돼요.' })];
 
-    show([].concat(header('남긴 경험', '내가 해 본 일과 느낌이에요.'), [subtabs('records')], body,
+    show([].concat(header('남긴 경험', '내가 해 본 일과 느낌이에요.'), [subtabs('records')], weeklyReview(), body,
       [h('a', { class: 'btn', href: BASE + '/record/none', text: '경험 남기기' })]));
+  }
+
+  // 이번 주 돌아보기: 횟수·비율·그래프 없이, 해 본 일을 느낌별로 묶어 글로만 보여 준다.
+  function weeklyReview() {
+    var from = new Date();
+    from.setDate(from.getDate() - 6);
+    var fromStr = from.getFullYear() + '-' + OneStep.ui.pad(from.getMonth() + 1) + '-' + OneStep.ui.pad(from.getDate());
+    var checked = plans().filter(function (p) { return p.check && p.date >= fromStr; });
+
+    var box = [h('h2', { text: '이번 주 돌아보기' })];
+    if (!checked.length) {
+      box.push(h('p', { class: 'small', text: '실천을 해 보고 「나의 계획」에서 「돌아보기」를 남기면 여기에서 한눈에 볼 수 있어요.' }));
+      return [h('div', { class: 'panel' }, box)];
+    }
+
+    CHECK_FEEL.forEach(function (f) {
+      var group = checked.filter(function (p) { return p.check.feel === f.id; });
+      if (!group.length) return;
+      box.push(h('p', { class: 'review-label', text: f.label }));
+      box.push(h('ul', { class: 'plain' }, group.map(function (p) { return h('li', { text: p.text }); })));
+    });
+
+    var tips = [];
+    if (checked.some(function (p) { return p.check.feel === 'hard' || p.check.size === 'smaller'; })) {
+      tips.push('조금 버거웠던 일은 더 작게 줄여서 다시 담아 보세요.');
+    }
+    if (checked.some(function (p) { return p.check.next === 'rest'; })) {
+      tips.push('쉬고 싶다고 한 일이 있어요. 쉬어 가도 괜찮아요.');
+    }
+    if (checked.some(function (p) { return p.check.size === 'bigger'; })) {
+      tips.push('더 해 봐도 괜찮다고 한 일은 조금 키워 보는 것도 좋아요.');
+    }
+    tips.forEach(function (t) { box.push(h('p', { class: 'small', text: t })); });
+    return [h('div', { class: 'panel' }, box)];
   }
 
   function recordItem(r) {
@@ -384,8 +543,10 @@
       if (!a) viewHome();
       else if (a === 'area') viewArea(parts[1]);
       else if (a === 'rest') viewRest();
-      else if (a === 'set') viewSet(parts[1], parts[2]);
+      else if (a === 'set') viewSet(parts[1], parts[2], parts[3]);
       else if (a === 'plan') viewPlan();
+      else if (a === 'check') viewCheck(parts[1]);
+      else if (a === 'checked') viewCheckDone(parts[1]);
       else if (a === 'records') viewRecords();
       else if (a === 'record' && parts[1] === 'edit') viewRecord(null, parts[2]);
       else if (a === 'record') viewRecord(parts[1], null);
