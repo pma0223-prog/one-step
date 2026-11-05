@@ -400,6 +400,7 @@
         h('button', { type: 'button', class: 'btn btn-outline', text: '다시 고르기', on: { click: viewDraft } })
       ])
     ]);
+    OneStep.ui.decorate(root, 'legacy', 'legacy');
     var heading = root.querySelector('h1');
     if (heading) heading.focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -451,6 +452,7 @@
       else if (a === 'draft') viewDraft();
       else if (a === 'export') viewExport();
       else viewTab('story');
+      OneStep.ui.decorate(root, 'legacy', 'legacy');
       var heading = root.querySelector('h1');
       if (heading) heading.focus({ preventScroll: true });
       window.scrollTo(0, 0);

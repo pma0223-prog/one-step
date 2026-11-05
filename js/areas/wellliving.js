@@ -117,10 +117,11 @@
   // ---------- B1 웰리빙 홈 ----------
 
   function viewHome() {
-    var grid = h('nav', { class: 'areas grid6', 'aria-label': '생활 영역' }, content.areas.map(function (a) {
-      return h('a', { class: 'card area-card a-' + a.id, href: BASE + '/area/' + a.id }, [
-        icon(a.id),
-        h('span', { class: 'card-text' }, [h('strong', { text: a.name }), h('small', { text: a.desc })])
+    var grid = h('nav', { class: 'big-grid', 'aria-label': '생활 영역' }, content.areas.map(function (a) {
+      return h('a', { class: 'big b-' + a.id, href: BASE + '/area/' + a.id }, [
+        OneStep.ui.icon(a.id, 'big-icon'),
+        h('span', { text: a.name }),
+        h('small', { text: a.desc })
       ]);
     }));
     show([
@@ -532,6 +533,18 @@
 
   // ---------- 경로 분기 ----------
 
+  // 화면 머리의 아이콘과 색: 특정 영역의 화면이면 그 영역의 것, 아니면 웰리빙 것
+  function headFor(parts) {
+    var id = null;
+    var a = parts[0];
+    if (a === 'area' || a === 'set') id = parts[1];
+    else if (a === 'check' || a === 'checked' || (a === 'record' && parts[1] !== 'edit' && parts[1] !== 'none')) {
+      var p = findPlan(parts[1]);
+      id = p ? p.areaId : null;
+    }
+    return id && areaById(id) ? id : 'living';
+  }
+
   function render(parts) {
     root = document.getElementById('wl-root');
     if (!content) {
@@ -551,6 +564,8 @@
       else if (a === 'record' && parts[1] === 'edit') viewRecord(null, parts[2]);
       else if (a === 'record') viewRecord(parts[1], null);
       else viewHome();
+      var head = headFor(parts);
+      OneStep.ui.decorate(root, head, head);
       var heading = root.querySelector('h1');
       if (heading) heading.focus({ preventScroll: true });
       window.scrollTo(0, 0);

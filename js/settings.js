@@ -3,8 +3,14 @@
   var storage = OneStep.storage;
   var $ = function (id) { return document.getElementById(id); };
 
+  var SIZES = ['normal', 'large', 'xlarge'];
+
+  function validSize(size) {
+    return SIZES.indexOf(size) === -1 ? 'normal' : size;
+  }
+
   function applySize(size) {
-    document.documentElement.setAttribute('data-size', size === 'large' ? 'large' : 'normal');
+    document.documentElement.setAttribute('data-size', validSize(size));
   }
 
   function currentSettings() {
@@ -139,7 +145,7 @@
   }
 
   function init() {
-    var size = currentSettings().size === 'large' ? 'large' : 'normal';
+    var size = validSize(currentSettings().size);
     applySize(size);
     document.querySelectorAll('input[name="size"]').forEach(function (r) {
       r.checked = r.value === size;

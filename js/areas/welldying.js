@@ -10,13 +10,6 @@
   var OFFICIAL_TEL = '1855-0075';
   var CHECKED_ON = '2026년 11월 2일';
 
-  var ICONS = {
-    ask: '<path d="M5 5h14v10H9l-4 4z"/><path d="M9 9h6M9 12h4"/>',
-    list: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6l1 1 2-2M4 12l1 1 2-2M4 18l1 1 2-2"/>',
-    discuss: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 2.5-6 6-6s6 2.5 6 6M15 14.5c3 0 6 2 6 5.5"/>',
-    help: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/>'
-  };
-
   var content = null;
   var loading = null;
   var root = null;
@@ -64,16 +57,19 @@
     nodes.forEach(function (n) { if (n) root.appendChild(n); });
   }
 
-  function icon(id) {
-    var span = h('span', { class: 'card-icon', 'aria-hidden': 'true' });
-    span.innerHTML = '<svg viewBox="0 0 24 24">' + ICONS[id] + '</svg>';
-    return span;
+  // 화면 머리(색 배경+아이콘)를 입히고 제목에 포커스를 둔다.
+  function finish() {
+    OneStep.ui.decorate(root, 'dying', 'dying');
+    var heading = root.querySelector('h1');
+    if (heading) heading.focus({ preventScroll: true });
+    window.scrollTo(0, 0);
   }
 
-  function menuCard(id, href, title, sub) {
-    return h('a', { class: 'card card-dying', href: href }, [
-      icon(id),
-      h('span', { class: 'card-text' }, [h('strong', { text: title }), h('small', { text: sub })])
+  function menuCard(id, iconKey, href, title, sub) {
+    return h('a', { class: 'big b-' + id, href: href }, [
+      OneStep.ui.icon(iconKey, 'big-icon'),
+      h('span', { text: title }),
+      h('small', { text: sub })
     ]);
   }
 
@@ -82,6 +78,11 @@
       toHub ? h('a', { class: 'back', href: BASE, text: '← 웰다잉으로' }) : null,
       h('a', { class: 'back', href: '#/', text: '← 홈으로' })
     ]);
+  }
+
+  // 전화 걸기는 누르기 쉬운 큰 버튼으로 둔다.
+  function callButton(number, label) {
+    return h('a', { class: 'btn', href: 'tel:' + number, text: label });
   }
 
   function externalLink(href, text) {
@@ -107,9 +108,7 @@
         h('button', { type: 'button', class: 'btn', text: '계속하기', on: { click: function () {
           markIntroSeen();
           viewHub();
-          var heading = root.querySelector('h1');
-          if (heading) heading.focus({ preventScroll: true });
-          window.scrollTo(0, 0);
+          finish();
         } } }),
         h('a', { class: 'btn btn-outline', href: '#/', text: '지금은 나갈래요' })
       ])
@@ -122,11 +121,11 @@
     show([
       h('h1', { tabindex: '-1', text: '웰다잉' }),
       h('p', { class: 'tagline', text: '내 속도로, 원하는 만큼만 해요.' }),
-      h('nav', { class: 'areas', 'aria-label': '웰다잉 메뉴' }, [
-        menuCard('ask', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
-        menuCard('list', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
-        menuCard('discuss', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
-        menuCard('help', BASE + '/help', '공식 기관과 도움', '공식 제도 안내와 마음이 힘들 때')
+      h('nav', { class: 'big-grid', 'aria-label': '웰다잉 메뉴' }, [
+        menuCard('ask', 'ask', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
+        menuCard('list', 'list', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
+        menuCard('discuss', 'relation', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
+        menuCard('help', 'help', BASE + '/help', '공식 기관과 도움', '공식 제도 안내와 마음이 힘들 때')
       ]),
       h('a', { class: 'text-link', href: BASE + '/answers', text: '내가 남긴 답 보기' }),
       backLinks(false)
@@ -385,13 +384,16 @@
         h('p', { text: '사전연명의료의향서는 공식 제도예요. 등록기관에서 설명을 듣고 본인이 직접 작성·등록해야 효력이 생겨요.' }),
         h('p', { class: 'notice', text: '이 앱에 남긴 답이나 목록은 그 문서가 아니고, 법적 효력도 없어요.' }),
         h('p', {}, [externalLink(OFFICIAL_URL, '국립연명의료관리기관 안내 보기 (새 창)')]),
-        h('p', {}, ['상담 문의 ', h('a', { href: 'tel:' + OFFICIAL_TEL.replace(/-/g, ''), text: OFFICIAL_TEL })])
+        h('p', { text: '상담 문의 ' + OFFICIAL_TEL }),
+        h('div', { class: 'row' }, [callButton(OFFICIAL_TEL.replace(/-/g, ''), OFFICIAL_TEL + ' 전화 걸기')])
       ]),
       h('div', { class: 'panel' }, [
         h('h2', { text: '마음이 힘들 때' }),
         h('p', { text: '혼자 견디지 않아도 괜찮아요. 전문 상담사와 이야기할 수 있어요.' }),
-        h('p', {}, ['자살예방 상담전화 ', h('a', { href: 'tel:109', text: '109' }), ' (24시간, 무료)']),
-        h('p', {}, ['지금 위험하거나 급한 상황이라면 ', h('a', { href: 'tel:119', text: '119' }), ' 또는 ', h('a', { href: 'tel:112', text: '112' }), '에 바로 연락해 주세요.']),
+        h('p', { text: '자살예방 상담전화 109 (24시간, 무료)' }),
+        h('div', { class: 'row' }, [callButton('109', '109 전화 걸기')]),
+        h('p', { text: '지금 위험하거나 급한 상황이라면 119 또는 112에 바로 연락해 주세요.' }),
+        h('div', { class: 'row' }, [callButton('119', '119 전화 걸기'), callButton('112', '112 전화 걸기')]),
         h('p', { class: 'small', text: '이 앱은 응급 상황에 대응할 수 없어요.' })
       ]),
       h('p', { class: 'small', text: CHECKED_ON + '에 공식 사이트에서 확인한 내용이에요. 전화번호와 제도는 바뀔 수 있으니 이용 전에 공식 사이트에서 다시 확인해 주세요.' }),
@@ -419,9 +421,7 @@
       else if (a === 'help') viewHelp();
       else if (introSeen()) viewHub();
       else viewIntro();
-      var heading = root.querySelector('h1');
-      if (heading) heading.focus({ preventScroll: true });
-      window.scrollTo(0, 0);
+      finish();
     }).catch(function () {
       root.textContent = '';
       root.appendChild(h('h1', { tabindex: '-1', text: '웰다잉' }));

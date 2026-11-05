@@ -88,6 +88,9 @@
     });
   }
 
+  // 설정 화면은 고정 화면이라 머리 영역을 한 번만 입힌다.
+  OneStep.ui.decorate(document.getElementById('screen-settings'), 'settings', 'settings');
+
   window.addEventListener('hashchange', render);
   render();
   initSplash();
