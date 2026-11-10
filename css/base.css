@@ -242,3 +242,13 @@ h2{display:flex;align-items:center;gap:6px}
 .btn{box-shadow:0 3px 8px rgba(47,111,60,.18)}
 .btn-outline{box-shadow:none}
 #wl-root .subtabs,#lg-root .subtabs{margin-top:0}
+
+/* 화면 아래 자연 그림과 응원 문구 */
+.nature-foot{margin:18px 0 8px;border-radius:26px;overflow:hidden;background:var(--card);box-shadow:var(--shadow)}
+.nature-art{display:block;line-height:0}
+.nature-art svg{display:block;width:100%;height:auto;max-height:130px}
+.nature-quote{margin:0;padding:14px 18px 16px;text-align:center;font-weight:700;line-height:1.55;color:#34523a}
+.nf-dying .nature-quote{color:#2f4a6a}
+.nf-legacy .nature-quote{color:#6b3f8a}
+.chip-emoji{margin-right:6px;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+.chip-emoji{font-size:1.25rem;vertical-align:-2px}

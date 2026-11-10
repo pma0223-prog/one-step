@@ -90,6 +90,7 @@
 
   // 설정 화면은 고정 화면이라 머리 영역을 한 번만 입힌다.
   OneStep.ui.decorate(document.getElementById('screen-settings'), 'settings', 'settings');
+  document.getElementById('screen-home').appendChild(OneStep.ui.footer('living', '홈'));
 
   window.addEventListener('hashchange', render);
   render();

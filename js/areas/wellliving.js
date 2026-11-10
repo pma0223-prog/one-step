@@ -53,6 +53,7 @@
     r1: '💌', r2: '💬', r3: '🤝', r4: '📒', r5: '☕',
     s1: '♻️', s2: '🎁', s3: '👋', s4: '🌿', s5: '🎨', s6: '🚪', s7: '💛', s8: '👂', s9: '🤙', s10: '⚖️', s11: '🚲', s12: '🏡', s13: '🌱'
   };
+  var VALUE_EMOJI = { care: '🤲', fair: '⚖️', env: '🌍', community: '🏘️' };
   var AREA_EMOJI = { health: '💪', dream: '🌈', mind: '🌿', money: '🐷', relation: '💕', share: '🎁' };
   var content = null;
   var loading = null;
@@ -210,19 +211,19 @@
     if (hasValues) {
       var isCustom = !!chosen && chosen.indexOf('custom:') === 0;
       var chips = area.values.map(function (val) {
-        return h('button', { type: 'button', class: 'chip', 'data-value': val.id, 'aria-pressed': chosen === val.id ? 'true' : 'false', text: val.name, on: { click: function () {
+        return h('button', { type: 'button', class: 'chip', 'data-value': val.id, 'aria-pressed': chosen === val.id ? 'true' : 'false', on: { click: function () {
           setValue(val.id, '[data-value="' + val.id + '"]');
-        } } });
+        } } }, [h('span', { class: 'chip-emoji', 'aria-hidden': 'true', text: VALUE_EMOJI[val.id] || '💛' }), h('span', { text: val.name })]);
       });
-      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'custom', 'aria-pressed': isCustom ? 'true' : 'false', text: '내가 적기', on: { click: function () {
+      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'custom', 'aria-pressed': isCustom ? 'true' : 'false', on: { click: function () {
         customOpen = true;
         viewArea(areaId);
         var f = root.querySelector('#v-custom');
         if (f) f.focus();
-      } } }));
-      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'all', 'aria-pressed': chosen === 'all' ? 'true' : 'false', text: '모두 보기', on: { click: function () {
+      } } }, [h('span', { class: 'chip-emoji', 'aria-hidden': 'true', text: '✏️' }), h('span', { text: '내가 적기' })]));
+      chips.push(h('button', { type: 'button', class: 'chip', 'data-value': 'all', 'aria-pressed': chosen === 'all' ? 'true' : 'false', on: { click: function () {
         setValue('all', '[data-value="all"]');
-      } } }));
+      } } }, [h('span', { class: 'chip-emoji', 'aria-hidden': 'true', text: '🌈' }), h('span', { text: '모두 보기' })]));
 
       var picker = [h('h2', { text: '1. 소중히 여기는 가치' }), h('div', { class: 'chips', role: 'group', 'aria-label': '가치 선택' }, chips)];
       if (customOpen || isCustom) {
