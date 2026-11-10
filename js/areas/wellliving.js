@@ -144,7 +144,7 @@
       header('웰리빙', '오늘을 잘 살기')[0],
       header('웰리빙', '오늘을 잘 살기')[1],
       subtabs('home'),
-      h('p', { class: 'hint', text: '마음이 가는 영역을 골라 보세요. 오늘은 쉬어도 괜찮아요.' }),
+      h('p', { class: 'hint', text: '마음이 가는 곳에서 가볍게 시작해 보아요. 오늘은 쉬어도 괜찮아요.' }),
       grid,
       h('a', { class: 'back', href: '#/', text: '← 홈으로' })
     ]);
