@@ -292,3 +292,4 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .btn,.chip{font-weight:700}
 .pick-row .row-text{font-weight:700}
 .panel h2,.card-today h2{color:var(--accent,var(--ink))}
+.m-estate .menu-ico{background:#fdefc9}.m-funeral .menu-ico{background:#fde4ef}

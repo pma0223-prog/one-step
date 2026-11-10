@@ -135,6 +135,8 @@
         menuCard('ask', '💭', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
         menuCard('list', '📋', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
         menuCard('discuss', '💬', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
+        menuCard('estate', '📑', BASE + '/info/estate', '재산과 상속', '유언·상속 절차, 어디서 확인하는지'),
+        menuCard('funeral', '🌸', BASE + '/info/funeral', '장례와 추모', '장례 절차와 지원 제도 안내'),
         menuCard('help', '🏛️', BASE + '/help', '공식 기관과 도움', '공식 제도 안내와 마음이 힘들 때')
       ]),
       h('p', { class: 'quote', text: '“ 천천히 해도 괜찮아요. 오늘 한 걸음이면 충분해요. ”' }),      h('a', { class: 'text-link', href: BASE + '/answers', text: '내가 남긴 답 보기' }),
@@ -415,6 +417,79 @@
     ]);
   }
 
+  // ---------- 정보 안내 (재산과 상속 / 장례와 추모) ----------
+  // 정보만 보여 준다. 입력칸도 저장도 없고, 앱이 권하거나 판단하지 않는다.
+
+  var INFO_CHECKED = '2026년 11월 10일';
+
+  var INFO = {
+    estate: {
+      title: '재산과 상속',
+      tagline: '정보만 안내해요. 앱에는 아무것도 적지 않아요.',
+      hero: ['상속은 정해진 절차가 있어요.', '어디서 확인하는지만 알아 두세요.'],
+      photo: 'nature-4',
+      panels: [
+        { h: '알아 두면 좋은 말', items: [
+          '유언의 방식은 민법에 다섯 가지가 정해져 있어요. 자필증서, 녹음, 공정증서, 비밀증서, 구수증서예요.',
+          '방식과 요건을 지키지 않으면 효력이 인정되지 않을 수 있어요. 작성 전에 전문가와 상의하는 것이 안전해요.',
+          '상속을 포기하거나 한정승인을 하려면, 상속이 시작된 것을 안 날부터 3개월 안에 법원에 신청해야 해요.'
+        ] },
+        { h: '사망자의 재산·빚 조회', items: [
+          '「안심상속 원스톱서비스」로 금융, 토지, 자동차, 세금, 연금 정보를 한 번에 조회할 수 있어요.',
+          '정부24 누리집이나 가까운 주민센터에서 신청해요. 신청 자격과 기한은 안내가 바뀔 수 있으니 신청 전에 정부24에서 확인해 주세요.'
+        ], links: [['정부24 누리집 (새 창)', 'https://www.gov.kr']] },
+        { h: '어디에 물어볼 수 있나요', items: [
+          '법률 상담: 대한법률구조공단 132',
+          '세금 상담: 국세청 상담센터 126'
+        ], calls: [['132', '132 전화 걸기'], ['126', '126 전화 걸기']] }
+      ],
+      note: '이 화면은 일반적인 안내예요. 개인의 상황에 맞는 판단은 변호사, 법무사, 세무사 같은 전문가에게 확인해 주세요.'
+    },
+    funeral: {
+      title: '장례와 추모',
+      tagline: '정보만 안내해요. 앱에는 아무것도 적지 않아요.',
+      hero: ['장례는 갑자기 닥치는 일이라,', '미리 알아 두면 마음이 덜 급해요.'],
+      photo: 'nature-5',
+      panels: [
+        { h: '알아 두면 좋은 말', items: [
+          '사망신고는 사망 사실을 안 날부터 1개월 안에 하도록 정해져 있어요. 가까운 주민센터에서 할 수 있어요.',
+          '장례식장, 화장시설, 봉안당, 자연장지의 시설과 가격 정보를 e하늘 장사정보시스템에서 볼 수 있어요.',
+          '화장 예약도 e하늘에서 할 수 있어요.',
+          '장례 방식은 매장, 화장 후 봉안, 자연장 등 여러 가지가 있고, 어느 것이 낫다는 정답은 없어요.'
+        ], links: [['e하늘 장사정보시스템 (새 창)', 'https://15774129.go.kr/']], calls: [['15774129', '1577-4129 전화 걸기']] },
+        { h: '장례 비용이 어려울 때', items: [
+          '지역에 따라 장례를 지원하는 제도가 있어요. 대상과 내용은 지자체마다 달라서, 사는 곳의 시·군·구청이나 주민센터에 문의해야 정확해요.'
+        ] },
+        { h: '추모와 기억', items: [
+          '남기고 싶은 이야기와 마음의 편지는 이 앱의 「마음의 유산」에 적어 둘 수 있어요.'
+        ], inner: [['마음의 유산 열기', '#/legacy']] }
+      ],
+      note: '이 화면은 일반적인 안내예요. 비용과 지원 제도는 지역과 시기에 따라 달라요.'
+    }
+  };
+
+  function viewInfo(key) {
+    var d = INFO[key];
+    if (!d) return viewHub();
+    var nodes = [
+      h('h1', { tabindex: '-1', text: d.title }),
+      h('p', { class: 'tagline', text: d.tagline }),
+      wdTabs('help'),
+      OneStep.ui.photoHero(d.photo, d.hero)
+    ];
+    d.panels.forEach(function (p) {
+      var kids = [h('h2', { text: p.h }), h('ul', { class: 'plain' }, p.items.map(function (x) { return h('li', { text: x }); }))];
+      (p.links || []).forEach(function (l) { kids.push(h('p', {}, [externalLink(l[1], l[0])])); });
+      var row = (p.calls || []).map(function (c) { return callButton(c[0], c[1]); });
+      (p.inner || []).forEach(function (l) { row.push(h('a', { class: 'btn btn-outline', href: l[1], text: l[0] })); });
+      if (row.length) kids.push(h('div', { class: 'row' }, row));
+      nodes.push(h('div', { class: 'panel' }, kids));
+    });
+    nodes.push(h('p', { class: 'notice', text: d.note }));
+    nodes.push(h('p', { class: 'small', text: INFO_CHECKED + '에 확인한 내용이에요. 제도와 전화번호는 바뀔 수 있으니 이용 전에 공식 사이트에서 다시 확인해 주세요.' }));
+    nodes.push(backLinks(true));
+    show(nodes);
+  }
   // ---------- 경로 분기 ----------
 
   function go(hash) { location.hash = hash; }
@@ -433,6 +508,7 @@
       else if (a === 'list') viewList();
       else if (a === 'discuss') viewDiscuss();
       else if (a === 'help') viewHelp();
+      else if (a === 'info') viewInfo(parts[1]);
       else if (introSeen()) viewHub();
       else viewIntro();
       finish();
