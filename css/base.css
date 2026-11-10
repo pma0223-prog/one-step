@@ -399,3 +399,10 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .bk-nav{align-items:center;justify-content:center}
 @keyframes bkflip{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.bk-page{animation:none}}
+
+@media print{
+  body.printing-book > *:not(#bk-print){display:none !important}
+  body.printing-book{background:#fff}
+  #bk-print .bk-page{aspect-ratio:auto;min-height:90vh;max-width:none;margin:0;box-shadow:none;border:0;border-radius:0;overflow:visible;page-break-after:always;break-after:page;animation:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media screen{#bk-print{display:none}}

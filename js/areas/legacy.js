@@ -160,12 +160,13 @@
       list.length
         ? h('ul', { class: 'items' }, list.map(function (e) { return entryItem(e, cfg.edit ? cfg.edit(e) : null, rerender); }))
         : h('p', { class: 'placeholder', text: cfg.empty }),
-      h('div', { class: 'row' }, [h('a', { class: 'btn', href: cfg.add[1], text: cfg.add[0] }), type === 'kept' ? h('a', { class: 'btn btn-outline', href: BASE + '/book', text: '📚 책으로 만들기' }) : null]),
+      h('div', { class: 'row' }, [h('a', { class: 'btn', href: cfg.add[1], text: cfg.add[0] })]),
       h('div', { class: 'panel' }, [
         h('h2', { text: '모아서 정리하기' }),
         h('p', { class: 'small', text: '기록은 내가 정하기 전에는 어디에도 보내지 않아요.' }),
         h('div', { class: 'row' }, [
           h('a', { class: 'btn btn-outline', href: BASE + '/draft', text: '초안 만들기' }),
+          h('a', { class: 'btn btn-outline', href: BASE + '/book', text: '📚 책으로 만들기' }),
           h('a', { class: 'btn btn-outline', href: BASE + '/export', text: '파일로 내보내기' })
         ])
       ]),
@@ -438,75 +439,158 @@
     ]);
   }
 
-  // ---------- 시연: 소중한 기록을 책 한 권으로 ----------
-  // 예시 기록으로만 보여 주며 아무것도 저장하지 않는다.
+  // ---------- D7 책으로 만들기 ----------
+  // 내가 고른 기록을 날짜순으로 엮어 책장처럼 넘겨 보고, 인쇄(PDF 저장)나 글 파일로 저장한다.
+  // 책은 어디에도 저장·전송하지 않고, 화면에서 만들어 바로 내려받는다.
 
   var BOOK_COLORS = [['벚꽃', '#f4b6c2', '#7a2e45'], ['숲', '#a9d6b0', '#1f5a33'], ['하늘', '#a8cdf0', '#1d4e7d'], ['노을', '#f7c99a', '#7a3d10']];
-  var BOOK_SAMPLE = [
-    ['story', '2026-03-12', '처음 걸어 본 아침 산책', '해 본 일: 동네 공원을 20분 걸었어요.\n그때의 느낌: 바람이 시원하고 마음이 가벼웠어요.\n배운 점: 시작이 작아도 괜찮다는 것.'],
-    ['kept', '2026-05-02', '고마웠던 순간', '오랜만에 친구가 안부 전화를 해 줬다. 별말 없이도 하루가 따뜻해졌다.'],
-    ['letter', '2026-07-21', '딸에게', '바쁜 날에도 밥은 챙겨 먹으렴. 네가 웃으면 나도 힘이 나.'],
-    ['kept', '2026-09-09', '마음에 남은 말', '"천천히 가도 멈추지만 않으면 된다."']
-  ];
-  var bookState = { color: 0, page: 0, title: '나의 소중한 기록' };
+  var bookDraft = { ids: [], color: 0, title: '나의 소중한 기록', page: 0 };
+  var BOOK_ICON = { story: '📖 ', kept: '🌷 ', letter: '💌 ' };
+
+  function bookEntryPage(e) {
+    if (e.type === 'story') return { date: e.date, icon: BOOK_ICON.story, heading: '나의 이야기', body: entryLines(e).join('\n') };
+    if (e.type === 'kept') return { date: e.date, icon: BOOK_ICON.kept, heading: e.title || '소중한 기록', body: e.text || '' };
+    return { date: e.date, icon: BOOK_ICON.letter, heading: e.to ? e.to + '에게' : '전하고 싶은 말', body: e.body || '' };
+  }
+
+  // 책의 쪽들: 표지 → 차례 → 기록 → 마지막 인사
+  function bookPages(list) {
+    var pages = [{ kind: 'cover' }, { kind: 'toc' }];
+    list.forEach(function (e) { pages.push({ kind: 'entry', p: bookEntryPage(e) }); });
+    pages.push({ kind: 'end' });
+    return pages;
+  }
+
+  function bookPageNode(pg, list, title, color) {
+    var c = BOOK_COLORS[color];
+    var inner;
+    if (pg.kind === 'cover') {
+      inner = [h('div', { class: 'bk-cover-art', 'aria-hidden': 'true', text: '🌷' }), h('h2', { class: 'bk-title', text: title }), h('p', { class: 'bk-sub', text: '지은이 · 나' })];
+    } else if (pg.kind === 'toc') {
+      inner = [h('h2', { class: 'bk-h', text: '차례' }), h('ol', { class: 'bk-toc' }, list.map(function (e) {
+        var p = bookEntryPage(e);
+        return h('li', {}, [h('span', { text: p.heading }), h('span', { class: 'bk-dots', text: dateLabel(p.date) })]);
+      }))];
+    } else if (pg.kind === 'end') {
+      inner = [h('p', { class: 'bk-end', text: '여기까지 읽어 주셔서 고맙습니다.' }), h('p', { class: 'bk-sub', text: dateLabel(ui.todayStr()) + ' 엮음' })];
+    } else {
+      inner = [h('p', { class: 'bk-date', text: pg.p.icon + dateLabel(pg.p.date) }), h('h2', { class: 'bk-h', text: pg.p.heading }), h('p', { class: 'pre bk-body', text: pg.p.body })];
+    }
+    var node = h('div', { class: 'bk-page' + (pg.kind === 'cover' ? ' bk-is-cover' : '') }, inner);
+    if (pg.kind === 'cover') { node.style.background = c[1]; node.style.color = c[2]; }
+    return node;
+  }
+
+  function bookText(list, title) {
+    return title + '\n지은이 · 나\n\n' + list.map(function (e) {
+      var p = bookEntryPage(e);
+      return '[' + dateLabel(p.date) + '] ' + p.heading + '\n' + p.body;
+    }).join('\n\n') + '\n\n여기까지 읽어 주셔서 고맙습니다.\n';
+  }
+
+  // 모든 쪽을 화면 밖에 펼쳐 놓고 인쇄창을 연다. 인쇄창에서 「PDF로 저장」을 고르면 된다.
+  function printBook(list, title, color) {
+    var wrap = h('div', { id: 'bk-print' }, bookPages(list).map(function (pg) { return bookPageNode(pg, list, title, color); }));
+    document.body.appendChild(wrap);
+    document.body.classList.add('printing-book');
+    function done() {
+      window.removeEventListener('afterprint', done);
+      document.body.classList.remove('printing-book');
+      if (wrap.parentNode) wrap.parentNode.removeChild(wrap);
+    }
+    window.addEventListener('afterprint', done);
+    window.print();
+  }
 
   function viewBook() {
-    var pages = [];
-    var c = BOOK_COLORS[bookState.color];
-    pages.push({ cover: true });
-    pages.push({ toc: true });
-    BOOK_SAMPLE.forEach(function (s) { pages.push({ s: s }); });
-    pages.push({ end: true });
-    if (bookState.page > pages.length - 1) bookState.page = 0;
-    var pg = pages[bookState.page];
+    var all = entries().sort(function (a, b) { return a.date.localeCompare(b.date); });
+    if (!all.length) {
+      show([
+        h('h1', { tabindex: '-1', text: '책으로 만들기' }),
+        h('p', { class: 'placeholder', text: '책에 담을 기록이 아직 없어요. 이야기를 쓰거나 기록을 가져온 뒤에 만들 수 있어요.' }),
+        backLinks(true)
+      ]);
+      return;
+    }
+    var picker = entryPicker(all, 'bk-');
+    all.forEach(function (e, i) {
+      if (bookDraft.ids.indexOf(e.id) !== -1) {
+        var cb = picker.ul.querySelectorAll('input[type=checkbox]')[i];
+        if (cb) cb.checked = true;
+      }
+    });
+    var titleIn = h('input', { type: 'text', id: 'bk-title', maxlength: '30', value: bookDraft.title });
+    var chips = BOOK_COLORS.map(function (col, i) {
+      return h('button', { type: 'button', class: 'chip', 'data-c': String(i), 'aria-pressed': bookDraft.color === i ? 'true' : 'false', text: col[0], on: { click: function () {
+        bookDraft.color = i;
+        chips.forEach(function (b, j) { b.setAttribute('aria-pressed', i === j ? 'true' : 'false'); });
+      } } });
+    });
+    var err = h('p', { class: 'small error', role: 'alert' });
+    show([
+      h('h1', { tabindex: '-1', text: '책으로 만들기' }),
+      h('p', { class: 'small', text: '내가 고른 기록을 날짜순으로 엮어 한 권의 책처럼 넘겨 볼 수 있어요. 글은 고친 것 없이 그대로 담겨요. 책은 내가 저장하기 전에는 어디에도 남지 않아요.' }),
+      h('h2', { text: '1. 책에 담을 기록 고르기' }),
+      picker.ul,
+      h('h2', { text: '2. 제목과 표지 색' }),
+      h('label', { for: 'bk-title', text: '책 제목' }), titleIn,
+      h('div', { class: 'chips', role: 'group', 'aria-label': '표지 색' }, chips),
+      err,
+      h('div', { class: 'row' }, [h('button', { type: 'button', class: 'btn', text: '책 만들기', on: { click: function () {
+        var chosen = picker.chosen();
+        if (!chosen.length) { err.textContent = '책에 담을 기록을 하나 이상 골라 주세요.'; return; }
+        bookDraft.ids = chosen.map(function (e) { return e.id; });
+        bookDraft.title = titleIn.value.trim() || '나의 소중한 기록';
+        bookDraft.page = 0;
+        viewBookRead();
+      } } })]),
+      backLinks(true)
+    ]);
+  }
 
-    function again(sel) {
-      viewBook();
+  function viewBookRead() {
+    var list = entries().filter(function (e) { return bookDraft.ids.indexOf(e.id) !== -1; })
+      .sort(function (a, b) { return a.date.localeCompare(b.date); });
+    if (!list.length) return viewBook();
+    var pages = bookPages(list);
+    if (bookDraft.page > pages.length - 1) bookDraft.page = 0;
+    var msg = h('p', { class: 'small', role: 'status' });
+
+    function turn(d, sel) {
+      bookDraft.page += d;
+      viewBookRead();
       var el = root.querySelector(sel);
       if (el) el.focus();
     }
-
-    var inner;
-    if (pg.cover) {
-      inner = [h('div', { class: 'bk-cover-art', 'aria-hidden': 'true', text: '🌷' }), h('h2', { class: 'bk-title', text: bookState.title }), h('p', { class: 'bk-sub', text: '지은이 · 나' })];
-    } else if (pg.toc) {
-      inner = [h('h2', { class: 'bk-h', text: '차례' }), h('ol', { class: 'bk-toc' }, BOOK_SAMPLE.map(function (s, i) {
-        return h('li', {}, [h('span', { text: s[2] }), h('span', { class: 'bk-dots', text: dateLabel(s[1]) })]);
-      }))];
-    } else if (pg.end) {
-      inner = [h('p', { class: 'bk-end', text: '여기까지 읽어 주셔서 고맙습니다.' }), h('p', { class: 'bk-sub', text: dateLabel('2026-11-10') + ' 엮음' })];
-    } else {
-      inner = [h('p', { class: 'bk-date', text: (pg.s[0] === 'letter' ? '💌 ' : pg.s[0] === 'story' ? '📖 ' : '🌷 ') + dateLabel(pg.s[1]) }), h('h2', { class: 'bk-h', text: pg.s[2] }), h('p', { class: 'pre bk-body', text: pg.s[3] })];
-    }
-
-    var chips = BOOK_COLORS.map(function (col, i) {
-      return h('button', { type: 'button', class: 'chip', 'data-c': String(i), 'aria-pressed': bookState.color === i ? 'true' : 'false', text: col[0], on: { click: function () { bookState.color = i; again('[data-c="' + i + '"]'); } } });
-    });
-    var titleIn = h('input', { type: 'text', id: 'bk-title', value: bookState.title, maxlength: '30' });
-    titleIn.addEventListener('input', function () { bookState.title = titleIn.value || '나의 소중한 기록'; var el = root.querySelector('.bk-title'); if (el) el.textContent = bookState.title; });
-
-    var book = h('div', { class: 'bk-page' + (pg.cover ? ' bk-is-cover' : ''), role: 'group', 'aria-label': '책 ' + (bookState.page + 1) + '쪽 / ' + pages.length + '쪽' }, inner);
-    if (pg.cover) { book.style.background = c[1]; book.style.color = c[2]; }
+    var page = bookPageNode(pages[bookDraft.page], list, bookDraft.title, bookDraft.color);
+    page.setAttribute('role', 'group');
+    page.setAttribute('aria-label', '책 ' + (bookDraft.page + 1) + '쪽 / ' + pages.length + '쪽');
 
     show([
       h('h1', { tabindex: '-1', text: '책으로 만들기' }),
-      h('p', { class: 'notice', text: '예시 화면이에요. 지금은 예시 기록으로만 보여 드려요. 아무것도 저장되지 않아요.' }),
-      h('p', { class: 'small', text: '소중한 기록에서 내가 고른 글을 모아 한 권의 책처럼 엮어요. 표지 색과 제목을 정하고, 책장을 넘겨 볼 수 있어요.' }),
-      h('div', { class: 'chips', role: 'group', 'aria-label': '표지 색' }, chips),
-      h('label', { for: 'bk-title', text: '책 제목' }), titleIn,
-      book,
+      page,
       h('div', { class: 'row bk-nav' }, [
-        h('button', { type: 'button', class: 'btn btn-outline', text: '← 이전', disabled: bookState.page === 0, on: { click: function () { bookState.page--; again('.bk-nav .btn:last-child'); } } }),
-        h('span', { class: 'small', 'aria-live': 'polite', text: (bookState.page + 1) + ' / ' + pages.length }),
-        h('button', { type: 'button', class: 'btn btn-outline', text: '다음 →', disabled: bookState.page === pages.length - 1, on: { click: function () { bookState.page++; again('.bk-nav .btn:last-child'); } } })
+        h('button', { type: 'button', class: 'btn btn-outline', 'data-n': 'prev', text: '← 이전', disabled: bookDraft.page === 0, on: { click: function () { turn(-1, '[data-n="prev"]'); } } }),
+        h('span', { class: 'small', 'aria-live': 'polite', text: (bookDraft.page + 1) + ' / ' + pages.length }),
+        h('button', { type: 'button', class: 'btn btn-outline', 'data-n': 'next', text: '다음 →', disabled: bookDraft.page === pages.length - 1, on: { click: function () { turn(1, '[data-n="next"]'); } } })
       ]),
+      msg,
       h('div', { class: 'panel' }, [
-        h('h2', { text: '완성하면' }),
-        h('p', { class: 'small', text: '실제 기능에서는 「PDF로 저장(인쇄)」와 「글 파일로 저장」을 고를 수 있어요. 만든 책은 내가 정하기 전에는 어디에도 보내지 않아요.' })
+        h('h2', { text: '저장하기' }),
+        h('p', { class: 'small', text: '「PDF로 저장」을 누르면 인쇄 창이 열려요. 대상을 「PDF로 저장」으로 고르면 파일이 돼요. 전달은 내가 직접 해 주세요.' }),
+        h('div', { class: 'row' }, [
+          h('button', { type: 'button', class: 'btn', text: 'PDF로 저장(인쇄)', on: { click: function () { printBook(list, bookDraft.title, bookDraft.color); } } }),
+          h('button', { type: 'button', class: 'btn btn-outline', text: '글 파일로 저장', on: { click: function () {
+            ui.downloadFile('maeum-yusan-chaek-' + ui.todayStr() + '.txt', bookText(list, bookDraft.title));
+            msg.textContent = '파일을 저장했어요. 내려받은 파일은 내가 직접 보관해 주세요.';
+          } } }),
+          h('button', { type: 'button', class: 'btn btn-outline', text: '다시 고르기', on: { click: viewBook } })
+        ])
       ]),
       backLinks(true)
     ]);
   }
+
   // ---------- 경로 분기 ----------
 
   function go(hash) { location.hash = hash; }
