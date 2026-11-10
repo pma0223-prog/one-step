@@ -183,68 +183,101 @@
       [h('section', { class: 'card-today' }, recentBox)]
     ));
   }
-  // ---------- 시연: 영역별 결과 그래프 (예시 데이터, 내 기록과 무관) ----------
+  // ---------- 시연: 이번 달 꽃밭 + 해 본 일 목록 (예시 데이터, 내 기록과 무관) ----------
   // 실제 앱에는 연결하지 않고 주소로만 연다. 내 기록은 읽지도 쓰지도 않는다.
+  // 쌓이기만 하고 줄지 않으며, 목표·비교·빈칸 표시가 없다.
 
-  var DEMO = [
-    { id: 'health', name: '건강 관리', n: 5, color: '#ef7f78' },
-    { id: 'dream', name: '꿈과 목표', n: 1, color: '#9a6ad0' },
-    { id: 'mind', name: '마음과 감사', n: 3, color: '#5cb06c' },
-    { id: 'money', name: '나의 자산 관리', n: 0, color: '#f0b43a' },
-    { id: 'relation', name: '관계와 소통', n: 2, color: '#7b86d6' },
-    { id: 'share', name: '나눔과 가치', n: 2, color: '#f09a62' }
-  ];
+  var DEMO_COLORS = { health: '#ef7f78', dream: '#9a6ad0', mind: '#5cb06c', money: '#f0b43a', relation: '#7b86d6', share: '#f09a62' };
+  var DEMO_MONTHS = {
+    now: { label: '이번 달', steps: [
+      ['health', 'h1', '10분 걷기'], ['mind', 'd1', '오늘 고마웠던 일 한 줄 적기'], ['relation', 'r2', '안부 한 줄 보내기'],
+      ['health', 'h3', '물 한 잔 더 마시기'], ['share', 's2', '고마움을 전하는 한마디 건네기'], ['health', 'h2', '스트레칭 한 번 하기'],
+      ['mind', 'd4', '천천히 숨을 세 번 쉬기'], ['dream', 'g1', '해 보고 싶은 일 하나 적기'], ['share', 's3', '이웃에게 먼저 인사하기'],
+      ['health', 'h6', '창문을 열고 바깥 공기 쐬기'], ['mind', 'd2', '지금 기분을 한 단어로 적기'], ['relation', 'r5', '함께하고 싶은 일 하나 적기']
+    ] },
+    prev: { label: '지난 달', steps: [
+      ['health', 'h1', '10분 걷기'], ['mind', 'd1', '오늘 고마웠던 일 한 줄 적기'], ['money', 'm4', '지갑이나 영수증 5분 정리하기'],
+      ['relation', 'r3', '고마운 사람을 떠올리고 이유 적기'], ['health', 'h3', '물 한 잔 더 마시기'], ['share', 's4', '일회용품 하나 줄여 보기'], ['mind', 'd5', '좋았던 순간 하나 떠올리기']
+    ] },
+    empty: { label: '새로 시작한 달', steps: [] }
+  };
+  var demoState = { month: 'now', numbers: true };
 
-  function demoBars() {
-    var max = 0;
-    DEMO.forEach(function (d) { if (d.n > max) max = d.n; });
-    return h('ul', { class: 'demo-bars' }, DEMO.map(function (d) {
-      var bar = h('span', { class: 'demo-bar' });
-      bar.style.width = (d.n ? Math.max(8, Math.round(d.n / max * 100)) : 0) + '%';
-      bar.style.background = d.color;
-      return h('li', { class: 'demo-row' }, [
-        h('span', { class: 'demo-name' }, [h('span', { 'aria-hidden': 'true', text: AREA_EMOJI[d.id] + ' ' }), d.name]),
-        h('span', { class: 'demo-track' }, [bar]),
-        h('span', { class: 'demo-num', text: d.n ? d.n + '번' : '쉼' })
-      ]);
-    }));
-  }
-
-  function demoFlower() {
-    var NS = 'http://www.w3.org/2000/svg';
-    var svg = '<svg viewBox="0 0 280 280" role="img" aria-label="영역별 꽃잎 그림. 해 본 영역의 꽃잎에만 색이 들어 있어요." focusable="false">';
-    DEMO.forEach(function (d, i) {
-      var on = d.n > 0;
-      svg += '<g transform="rotate(' + (i * 60) + ' 140 140)">' +
-        '<ellipse cx="140" cy="78" rx="27" ry="50" fill="' + (on ? d.color : '#ece8dc') + '" fill-opacity="' + (on ? '.85' : '.7') + '" stroke="#fff" stroke-width="3"/></g>';
-      var a = (i * 60 - 90) * Math.PI / 180;
-      var x = 140 + Math.cos(a) * 0 , y = 0;
-      var ang = i * 60 * Math.PI / 180;
-      x = 140 + Math.sin(ang) * 80; y = 140 - Math.cos(ang) * 80;
-      svg += '<text x="' + x.toFixed(1) + '" y="' + (y + 8).toFixed(1) + '" font-size="26" fill="#333" text-anchor="middle" opacity="' + (on ? '1' : '.4') + '">' + AREA_EMOJI[d.id] + '</text>';
-    });
-    svg += '<circle cx="140" cy="140" r="26" fill="#fff8dc" stroke="#fff" stroke-width="3"/><text x="140" y="147" font-size="22" fill="#333" text-anchor="middle">🌼</text></svg>';
-    var box = h('div', { class: 'demo-flower' });
+  function demoGarden(steps) {
+    var svg = '<svg viewBox="0 0 320 210" role="img" aria-label="' + (steps.length ? '한 걸음마다 꽃이 한 송이씩 핀 꽃밭' : '씨앗이 심어진 빈 밭') + '" focusable="false">' +
+      '<defs><linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff0fb"/><stop offset="1" stop-color="#fff6dc"/></linearGradient></defs>' +
+      '<rect width="320" height="210" fill="url(#gsky)"/>' +
+      '<circle cx="268" cy="38" r="18" fill="#fbd66a"/>' +
+      '<path d="M0 120c60-26 120-22 180-6s100 6 140-8v104H0z" fill="#b9dfa8"/>' +
+      '<path d="M0 150c70-16 150-12 220-2s70 0 100-6v68H0z" fill="#8ecb86"/>';
+    if (!steps.length) {
+      svg += '<ellipse cx="160" cy="168" rx="12" ry="8" fill="#8a5a3a"/><path d="M160 162v-10M160 154c-6 0-9-4-9-8 6 0 9 3 9 8zM160 154c6 0 9-4 9-8-6 0-9 3-9 8z" stroke="#4d9a64" stroke-width="2" fill="#6cc080"/>';
+    } else {
+      var spots = steps.map(function (st, i) {
+        return { st: st, x: 22 + ((i * 61 + 17) % 276), y: 122 + ((i * 37 + 11) % 74) };
+      }).sort(function (a, b) { return a.y - b.y; });
+      spots.forEach(function (o) {
+        var c = DEMO_COLORS[o.st[0]] || '#f09a62', r = 7 + (o.y - 122) / 18, x = o.x, y = o.y;
+        svg += '<path d="M' + x + ' ' + (y + r) + 'v' + (r + 8) + '" stroke="#4f9a5a" stroke-width="2"/>';
+        for (var k = 0; k < 5; k++) {
+          var a = k * 72 * Math.PI / 180;
+          svg += '<circle cx="' + (x + Math.sin(a) * r).toFixed(1) + '" cy="' + (y - Math.cos(a) * r).toFixed(1) + '" r="' + (r * 0.62).toFixed(1) + '" fill="' + c + '" stroke="#fff" stroke-width="1"/>';
+        }
+        svg += '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.45).toFixed(1) + '" fill="#fff3b0"/>';
+      });
+    }
+    svg += '</svg>';
+    var box = h('div', { class: 'demo-garden' });
     box.innerHTML = svg;
     return box;
   }
 
   function viewDemo() {
+    var m = DEMO_MONTHS[demoState.month];
+    function pick(key) {
+      demoState.month = key;
+      viewDemo();
+      var again = root.querySelector('[data-m="' + key + '"]');
+      if (again) again.focus();
+    }
+    var tabs = ['now', 'prev', 'empty'].map(function (key) {
+      return h('button', { type: 'button', class: 'chip', 'data-m': key, 'aria-pressed': demoState.month === key ? 'true' : 'false', text: DEMO_MONTHS[key].label, on: { click: function () { pick(key); } } });
+    });
+    var numBtn = h('button', { type: 'button', class: 'chip', 'aria-pressed': demoState.numbers ? 'true' : 'false', text: '숫자 보이기', on: { click: function () {
+      demoState.numbers = !demoState.numbers;
+      viewDemo();
+      var again = root.querySelector('[data-num]');
+      if (again) again.focus();
+    } } });
+    numBtn.setAttribute('data-num', '1');
+
+    var head = !m.steps.length
+      ? '씨앗을 심었어요. 천천히 피워 가요.'
+      : (demoState.numbers ? m.label + ' 한 걸음 ' + m.steps.length + '번' : m.label + ' 피어난 꽃이에요');
+
+    var list = m.steps.length
+      ? h('ul', { class: 'demo-list' }, m.steps.map(function (st) {
+          return h('li', { class: 'demo-item' }, [
+            h('span', { class: 'row-icon b-' + st[0], 'aria-hidden': 'true', text: EMOJI[st[1]] || '🌼' }),
+            h('span', { text: st[2] })
+          ]);
+        }))
+      : h('p', { class: 'small', text: '아직 해 본 일이 없어도 괜찮아요. 하고 싶을 때 한 걸음이면 돼요.' });
+
     show([].concat(
-      header('결과 한눈에 보기', '시연 화면'),
+      header('한 걸음 꽃밭', '시연 화면'),
       [subtabs('demo'),
         h('p', { class: 'notice', text: '예시 화면이에요. 내 기록과는 관계없고, 아무것도 저장하지 않아요. 이 모양을 실제 앱에 넣을지 의논하려고 만든 시연이에요.' }),
+        h('div', { class: 'chips', role: 'group', 'aria-label': '달 고르기' }, tabs),
         h('section', { class: 'card-today' }, [
-          h('h2', { text: '① 막대로 보기' }),
-          h('p', { class: 'small', text: '이번 주에 영역마다 해 본 실천이에요.' }),
-          demoBars(),
-          h('p', { class: 'small', text: '한눈에 비교되지만, 적은 영역이 부족해 보일 수 있어요.' })
+          h('h2', { text: head }),
+          h('p', { class: 'small', text: '한 걸음을 내디딜 때마다 꽃이 한 송이씩 피어요. 쉬어도 핀 꽃은 그대로 있어요.' }),
+          demoGarden(m.steps),
+          h('div', { class: 'chips' }, [numBtn])
         ]),
         h('section', { class: 'card-today' }, [
-          h('h2', { text: '② 꽃잎으로 보기' }),
-          h('p', { class: 'small', text: '이번 주에 한 걸음 내디딘 영역에 색이 들어와요. 숫자와 크기 차이는 없어요.' }),
-          demoFlower(),
-          h('p', { class: 'lead', text: '이번 주에도 여러 갈래로 한 걸음씩 걸었어요.' })
+          h('h2', { text: m.label + ' 해 본 일' }),
+          list
         ]),
         h('a', { class: 'back', href: BASE, text: '← 웰리빙으로' })]
     ));

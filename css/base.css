@@ -367,3 +367,9 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .demo-flower{max-width:300px;margin:6px auto}
 .demo-flower svg{display:block;width:100%;height:auto;stroke:none;fill:none}
 .demo-row{grid-template-columns:9.4em 1fr 2.2em}
+
+/* 시연: 한 걸음 꽃밭 */
+.demo-garden{margin:8px 0;border-radius:20px;overflow:hidden;line-height:0}
+.demo-garden svg{display:block;width:100%;height:auto;stroke:none;fill:none}
+.demo-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.demo-item{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 12px 6px 8px;background:#fbfaf4;border-radius:16px;font-weight:600}
