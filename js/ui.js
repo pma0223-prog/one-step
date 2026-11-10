@@ -118,6 +118,17 @@
     ]
   };
 
+  // 허브 위쪽의 사진 배너: 사진 위에 흰 막을 얹어 글씨가 또렷하게 보인다.
+  function photoHero(name, lines) {
+    var p = h('p', {});
+    lines.forEach(function (line, i) {
+      if (i) p.appendChild(document.createElement('br'));
+      p.appendChild(document.createTextNode(line));
+    });
+    var box = h('div', { class: 'hero hero-photo' }, [p]);
+    box.style.backgroundImage = 'url(images/' + name + '.webp?v=1)';
+    return box;
+  }
   function footer(theme, seedText) {
     var key = QUOTES[theme] ? theme : 'living';
     var list = QUOTES[key];
@@ -174,5 +185,5 @@
   global.OneStep = global.OneStep || {};
   global.OneStep.ui = {
     icon: icon,
-    decorate: decorate, footer: footer, h: h, pad: pad, todayStr: todayStr, newId: newId, downloadFile: downloadFile };
+    decorate: decorate, footer: footer, photoHero: photoHero, h: h, pad: pad, todayStr: todayStr, newId: newId, downloadFile: downloadFile };
 })(window);

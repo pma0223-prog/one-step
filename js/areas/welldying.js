@@ -74,6 +74,13 @@
       h('span', { class: 'chev', 'aria-hidden': 'true', text: '›' })
     ]);
   }
+  // 위쪽 탭: 안내 / 나의 준비 / 관련 기관
+  function wdTabs(current) {
+    var items = [['home', '안내', BASE], ['prep', '나의 준비', BASE + '/list'], ['help', '관련 기관', BASE + '/help']];
+    return h('nav', { class: 'subtabs', 'aria-label': '웰다잉 메뉴' }, items.map(function (it) {
+      return h('a', { href: it[2], 'aria-current': it[0] === current ? 'page' : false, text: it[1] });
+    }));
+  }
   function backLinks(toHub) {
     return h('div', { class: 'row' }, [
       toHub ? h('a', { class: 'back', href: BASE, text: '← 웰다잉으로' }) : null,
@@ -122,10 +129,8 @@
     show([
       h('h1', { tabindex: '-1', text: '웰다잉' }),
       h('p', { class: 'tagline', text: '내 속도로, 원하는 만큼만 해요.' }),
-      h('div', { class: 'hero hero-dying' }, [
-        h('span', { class: 'hero-art', 'aria-hidden': 'true', text: '🌱' }),
-        h('p', { text: '지금부터 천천히, 나의 속도로 생각해 봐요.' })
-      ]),
+      wdTabs('home'),
+      OneStep.ui.photoHero('nature-1', ['지금부터 천천히,', '나의 속도로 생각해 봐요.']),
       h('nav', { class: 'menu-list', 'aria-label': '웰다잉 메뉴' }, [
         menuCard('ask', '💭', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
         menuCard('list', '📋', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
@@ -199,6 +204,7 @@
     });
     show([
       h('h1', { tabindex: '-1', text: '내가 남긴 답' }),
+      wdTabs('prep'),
       rows.length
         ? h('ul', { class: 'items' }, rows)
         : h('p', { class: 'placeholder', text: '아직 남긴 답이 없어요. 하고 싶을 때만 해도 괜찮아요.' }),
@@ -276,6 +282,7 @@
     show([
       h('h1', { tabindex: '-1', text: '정리하고 싶은 일' }),
       h('p', { class: 'tagline', text: '내가 정하고, 내 속도로 해요.' }),
+      wdTabs('prep'),
       items.length ? h('ul', { class: 'items' }, items) : h('p', { class: 'placeholder', text: '아직 담은 일이 없어요.' }),
       h('form', { novalidate: true, on: { submit: function (e) {
         e.preventDefault();
@@ -345,6 +352,7 @@
     show([
       h('h1', { tabindex: '-1', text: '상의할 질문' }),
       h('p', { class: 'tagline', text: '이야기하고 싶은 질문에 체크해 두세요.' }),
+      wdTabs('prep'),
       h('p', { class: 'small', text: '체크한 질문은 파일로 저장해서 상담이나 대화 때 들고 갈 수 있어요. 앱이 대신 연락하거나 보내지는 않아요.' })
     ].concat(body, [
       h('form', { novalidate: true, on: { submit: function (e) {
@@ -384,6 +392,7 @@
   function viewHelp() {
     show([
       h('h1', { tabindex: '-1', text: '공식 기관과 도움' }),
+      wdTabs('help'),
       h('div', { class: 'panel' }, [
         h('h2', { text: '연명의료에 대한 공식 안내' }),
         h('p', { text: '사전연명의료의향서는 공식 제도예요. 등록기관에서 설명을 듣고 본인이 직접 작성·등록해야 효력이 생겨요.' }),
