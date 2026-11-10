@@ -157,7 +157,7 @@
   var PICS = { living: 1, dying: 1, legacy: 1 };
   function icon(key, className) {
     var span = h('span', { class: (className || 'head-icon') + (PICS[key] ? ' pic' : ''), 'aria-hidden': 'true' });
-    if (PICS[key]) { span.innerHTML = '<img src="images/icon-' + key + '.webp?v=1" alt="" decoding="async">'; return span; }
+    if (PICS[key]) { span.innerHTML = '<img src="images/icon-' + key + '.webp?v=2" alt="" decoding="async">'; return span; }
     span.innerHTML = '<svg viewBox="0 0 48 48">' + (ICONS[key] || '') + '</svg>';
     return span;
   }
