@@ -203,3 +203,9 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outlin
 .tip-card .chev{font-size:1.8rem;color:var(--muted)}
 .tip-card:focus-visible{outline:3px solid var(--green);outline-offset:2px}
 .pick-row{margin:0}
+.row-icon{font-size:1.6rem;line-height:1;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+.pick-row{border-radius:22px}
+.pick-row:nth-child(1) .row-icon{box-shadow:0 0 0 3px #fff inset}
+.card-today{background:linear-gradient(#fff,#fffaf2);border:2px dashed #f1d9b5}
+.card-today h2::after{content:"";display:block;width:56px;height:5px;margin-top:6px;border-radius:3px;background:repeating-linear-gradient(90deg,#f2a65a 0 8px,#f7d794 8px 14px)}
+.tip-card{border:2px dashed #cfe5cf}

@@ -44,6 +44,16 @@
     share: '<rect x="4" y="10" width="16" height="10" rx="1"/><path d="M12 10v10M3 7h18v3H3zM12 7c-3 0-4-4-1.5-4C12 3 12 7 12 7zM12 7c3 0 4-4 1.5-4C12 3 12 7 12 7z"/>'
   };
 
+  // 실천마다 붙는 작은 그림. 장식이라 화면 읽기 프로그램은 건너뛴다.
+  var EMOJI = {
+    h1: '🚶', h2: '🧘', h3: '💧', h4: '📝', h5: '🌙', h6: '🪟',
+    g1: '⭐', g2: '🔍', g3: '🪜', g4: '🧸', g5: '🎯',
+    d1: '🌷', d2: '🙂', d3: '🛁', d4: '🌬️', d5: '✨',
+    m1: '🔎', m2: '🛍️', m3: '📄', m4: '👛', m5: '🍀',
+    r1: '💌', r2: '💬', r3: '🤝', r4: '📒', r5: '☕',
+    s1: '♻️', s2: '🎁', s3: '👋', s4: '🌿', s5: '🎨', s6: '🚪', s7: '💛', s8: '👂', s9: '🤙', s10: '⚖️', s11: '🚲', s12: '🏡', s13: '🌱'
+  };
+  var AREA_EMOJI = { health: '💪', dream: '🌈', mind: '🌿', money: '🐷', relation: '💕', share: '🎁' };
   var content = null;
   var loading = null;
   var offsets = {};
@@ -248,7 +258,7 @@
         var cb = h('input', { type: 'checkbox', id: 'pk-' + idx, value: it.id });
         return h('li', {}, [
           h('label', { class: 'pick-row', for: 'pk-' + idx }, [
-            OneStep.ui.icon(area.id, 'row-icon b-' + area.id),
+            h('span', { class: 'row-icon b-' + area.id, 'aria-hidden': 'true', text: EMOJI[it.id] || '🌼' }),
             h('span', { class: 'row-text', text: prefs.light ? it.small : it.text }),
             cb
           ])
@@ -297,7 +307,7 @@
       light.setAttribute('data-light', '1');
 
       nodes.push(h('section', { class: 'card-today' }, [
-        h('h2', { text: '오늘의 작은 실천' }),
+        h('h2', { text: (AREA_EMOJI[areaId] || '🌼') + ' 오늘의 작은 실천' }),
         h('p', { class: 'lead', text: hasValues && label ? '「' + label + '」에 어울리는 일부터 시작해 보세요.' : '지금 할 수 있는 작은 일부터 시작해 보세요.' }),
         h('ul', { class: 'pick-rows' }, rows),
         h('div', { class: 'chips' }, [light])
@@ -312,7 +322,7 @@
       nodes.push(h('a', { class: 'tip-card', href: BASE + '/plan' }, [
         OneStep.ui.icon(area.id, 'row-icon b-' + area.id),
         h('span', { class: 'tip-text' }, [
-          h('strong', { text: '작게 시작해도 충분해요' }),
+          h('strong', { text: '작게 시작해도 충분해요 🌱' }),
           h('small', { text: '고른 실천은 「나의 계획」에서 언제든 확인해요' })
         ]),
         h('span', { class: 'chev', 'aria-hidden': 'true', text: '›' })
