@@ -252,3 +252,4 @@ h2{display:flex;align-items:center;gap:6px}
 .nf-legacy .nature-quote{color:#6b3f8a}
 .chip-emoji{margin-right:6px;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
 .chip-emoji{font-size:1.25rem;vertical-align:-2px}
+.nature-art img{display:block;width:100%;height:170px;object-fit:cover;object-position:center 60%;background:#e8f0e8}

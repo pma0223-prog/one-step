@@ -83,6 +83,8 @@
     dying: '<rect width="360" height="110" fill="#e4eefb"/><circle cx="70" cy="34" r="16" fill="#fff8e1"/><circle cx="64" cy="30" r="14" fill="#e4eefb"/><g fill="#fff"><circle cx="150" cy="24" r="2"/><circle cx="210" cy="40" r="1.6"/><circle cx="300" cy="22" r="2"/></g><path d="M0 70c50-20 100-22 160-6s130 8 200-12v58H0z" fill="#b9cdea"/><path d="M0 88c80-14 150-10 220 0s100 2 140-6v28H0z" fill="#8fb0dc"/><path d="M0 98c60 6 120-4 180 2s120 2 180-4v14H0z" fill="#cfe0f6" opacity=".7"/><path d="M280 60v-14M280 54c-6-2-9-6-9-11 6 0 9 4 9 11zM280 50c6-2 9-6 9-11-6 0-9 4-9 11z" stroke="#4d9a64" stroke-width="2" fill="#6cc080"/>',
     legacy: '<rect width="360" height="110" fill="#f7ecf8"/><path d="M0 84c70-20 130-14 200-2s110 2 160-8v36H0z" fill="#d9c5e8"/><path d="M0 98c80-10 160-6 230 0s90 0 130-4v16H0z" fill="#b9d9a8"/><path d="M180 100V58" stroke="#8a6a4a" stroke-width="7" stroke-linecap="round"/><path d="M180 78l-18-14M180 70l16-12" stroke="#8a6a4a" stroke-width="4" stroke-linecap="round"/><g fill="#f4a6b8"><circle cx="164" cy="44" r="16"/><circle cx="184" cy="34" r="18"/><circle cx="204" cy="46" r="15"/><circle cx="150" cy="58" r="11"/><circle cx="214" cy="60" r="11"/></g><g fill="#f9c9d4"><circle cx="176" cy="40" r="6"/><circle cx="196" cy="50" r="5"/></g><g fill="#f4a6b8"><circle cx="110" cy="70" r="2.5"/><circle cx="250" cy="82" r="2.5"/><circle cx="130" cy="92" r="2.5"/></g>'
   };
+  // 자연 그림 파일 번호(images/nature-N.webp). 영역 분위기에 맞게 나눠 둔다.
+  var PHOTOS = { living: [2, 3, 5, 4], dying: [1, 6], legacy: [4, 5, 1] };
   var QUOTES = {
     living: [
       '작은 한 걸음도 분명히 앞으로 가는 걸음이에요.',
@@ -91,21 +93,28 @@
       '꽃은 서두르지 않아도 제때 피어요.',
       '나를 돌보는 일은 가장 먼저 해도 좋은 일이에요.',
       '느려도 괜찮아요. 멈추지만 않으면 돼요.',
-      '오늘의 작은 친절이 내일의 나를 웃게 해요.'
+      '오늘의 작은 친절이 내일의 나를 웃게 해요.',
+      '바람이 불어도 오늘의 걸음은 나만의 속도로 가요.',
+      '맑은 날도 흐린 날도, 나는 계속 자라고 있어요.',
+      '잠깐 하늘을 올려다보는 것도 훌륭한 실천이에요.'
     ],
     dying: [
       '천천히, 내 속도로. 서두를 이유는 없어요.',
       '생각을 적는 것만으로도 마음에 길이 생겨요.',
       '소중한 사람과 나누는 이야기는 모두 선물이에요.',
       '마음이 정리되면 하루가 한결 가벼워져요.',
-      '힘들 땐 혼자 두지 말고 곁의 사람에게 기대어 봐요.'
+      '힘들 땐 혼자 두지 말고 곁의 사람에게 기대어 봐요.',
+      '고요한 물처럼, 마음도 가라앉으면 맑아져요.',
+      '오늘 쉬어 가도 내일은 다시 환하게 밝아 와요.'
     ],
     legacy: [
       '살아온 시간은 그 자체로 귀한 이야기예요.',
       '고마운 마음은 적어 두면 오래 따뜻해요.',
       '작은 기억 하나가 누군가에게는 큰 힘이 돼요.',
       '전하는 말은 길지 않아도 마음은 충분히 닿아요.',
-      '지나온 길마다 배운 것이 있어요.'
+      '지나온 길마다 배운 것이 있어요.',
+      '나무 그늘처럼, 내 이야기가 누군가의 쉼이 될 수 있어요.',
+      '꽃길이 아니어도 걸어온 길은 모두 아름다워요.'
     ]
   };
 
@@ -118,7 +127,17 @@
     String(seedText || '').split('').forEach(function (c) { sum += c.charCodeAt(0); });
     var box = h('aside', { class: 'nature-foot nf-' + key });
     var art = h('span', { class: 'nature-art', 'aria-hidden': 'true' });
-    art.innerHTML = '<svg viewBox="0 0 360 110" preserveAspectRatio="xMidYMid slice" focusable="false">' + SCENES[key] + '</svg>';
+    var pics = PHOTOS[key];
+    var img = document.createElement('img');
+    img.alt = '';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.src = 'images/nature-' + pics[(day + sum + 1) % pics.length] + '.webp?v=1';
+    img.onerror = function () {
+      art.textContent = '';
+      art.innerHTML = '<svg viewBox="0 0 360 110" preserveAspectRatio="xMidYMid slice" focusable="false">' + SCENES[key] + '</svg>';
+    };
+    art.appendChild(img);
     box.appendChild(art);
     box.appendChild(h('p', { class: 'nature-quote', text: '“ ' + list[(day + sum) % list.length] + ' ”' }));
     return box;
