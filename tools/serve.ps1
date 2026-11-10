@@ -1,4 +1,4 @@
-param(
+﻿param(
   [int]$Port = 8080,
   [string]$Root = (Join-Path $PSScriptRoot '..')
 )
@@ -13,6 +13,7 @@ $types = @{
   '.png'  = 'image/png'
   '.jpg'  = 'image/jpeg'
   '.svg'  = 'image/svg+xml'
+  '.webp' = 'image/webp'
   '.ico'  = 'image/x-icon'
   '.txt'  = 'text/plain; charset=utf-8'
 }

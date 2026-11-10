@@ -153,8 +153,11 @@
     box.appendChild(h('p', { class: 'nature-quote', text: '“ ' + list[(day + sum) % list.length] + ' ”' }));
     return box;
   }
+  // 세 영역(웰리빙·웰다잉·마음의 유산)은 그림 파일, 나머지는 도형 아이콘을 쓴다.
+  var PICS = { living: 1, dying: 1, legacy: 1 };
   function icon(key, className) {
-    var span = h('span', { class: className || 'head-icon', 'aria-hidden': 'true' });
+    var span = h('span', { class: (className || 'head-icon') + (PICS[key] ? ' pic' : ''), 'aria-hidden': 'true' });
+    if (PICS[key]) { span.innerHTML = '<img src="images/icon-' + key + '.webp?v=1" alt="" decoding="async">'; return span; }
     span.innerHTML = '<svg viewBox="0 0 48 48">' + (ICONS[key] || '') + '</svg>';
     return span;
   }
