@@ -101,7 +101,7 @@
 
   function subtabs(current) {
     var items = [
-      ['home', '추천 실천', BASE],
+      ['home', '한눈에 보기', BASE],
       ['plan', '나의 계획', BASE + '/plan'],
       ['records', '기록', BASE + '/records']
     ];
@@ -132,24 +132,57 @@
 
   // ---------- B1 웰리빙 홈 ----------
 
-  function viewHome() {
-    var grid = h('nav', { class: 'big-grid', 'aria-label': '생활 영역' }, content.areas.map(function (a) {
-      return h('a', { class: 'big b-' + a.id, href: BASE + '/area/' + a.id }, [
-        OneStep.ui.icon(a.id, 'big-icon'),
-        h('span', { text: a.name }),
-        h('small', { text: a.desc })
-      ]);
-    }));
-    show([
-      header('웰리빙', '오늘을 잘 살기')[0],
-      header('웰리빙', '오늘을 잘 살기')[1],
-      subtabs('home'),
-      h('p', { class: 'hint', text: '마음이 가는 곳에서 가볍게 시작해 보아요.' }),
-      grid,
-      h('a', { class: 'back', href: '#/', text: '← 홈으로' })
-    ]);
+  // 웰리빙 홈: 영역 고르기는 앱 홈에서 하고, 여기서는 지금까지의 결과를 한눈에 모아 보여 준다.
+  // 점수·횟수·그래프 없이 말과 상태로만 보여 준다.
+  function statusWord(p) {
+    return p.status === 'planned' ? '담아 둠' : labelOf(STATUS, p.status);
   }
 
+  function viewHome() {
+    var today = todayStr();
+    var todays = plans().filter(function (p) { return p.date === today; })
+      .sort(function (a, b) { return (a.time || '').localeCompare(b.time || ''); });
+
+    var todayBox = [h('h2', { text: '오늘의 상태' })];
+    if (todays.length) {
+      todayBox.push(h('ul', { class: 'state-list' }, todays.map(function (p) {
+        return h('li', { class: 'state-row' }, [
+          h('span', { class: 'row-icon b-' + (p.areaId || 'health'), 'aria-hidden': 'true', text: EMOJI[p.actionId] || AREA_EMOJI[p.areaId] || '🌼' }),
+          h('span', { class: 'row-text' }, [h('strong', { text: p.text }), h('small', { text: areaName(p.areaId) })]),
+          h('span', { class: 'state-pill st-' + p.status, text: statusWord(p) })
+        ]);
+      })));
+      todayBox.push(h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/plan', text: '나의 계획에서 결과 남기기' })]));
+    } else {
+      todayBox.push(h('p', { class: 'small', text: '오늘 담은 실천이 아직 없어요. 담지 않아도 괜찮아요.' }));
+      todayBox.push(h('div', { class: 'row' }, [h('a', { class: 'btn', href: '#/', text: '홈에서 영역 고르기' })]));
+    }
+
+    var recent = records().sort(function (a, b) { return (b.date + b.createdAt).localeCompare(a.date + a.createdAt); }).slice(0, 3);
+    var recentBox = [h('h2', { text: '최근 기록' })];
+    if (recent.length) {
+      recentBox.push(h('ul', { class: 'items' }, recent.map(function (r) {
+        var text = r.did || r.feel || r.next || '';
+        if (text.length > 60) text = text.slice(0, 60) + '…';
+        return h('li', { class: 'item' }, [
+          h('p', { class: 'small', text: dateLabel(r.date) + (r.areaId ? ' · ' + areaName(r.areaId) : '') }),
+          h('p', { text: text })
+        ]);
+      })));
+      recentBox.push(h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/records', text: '기록 모두 보기' })]));
+    } else {
+      recentBox.push(h('p', { class: 'small', text: '아직 남긴 기록이 없어요. 기록은 하고 싶을 때만 남겨도 돼요.' }));
+    }
+
+    show([].concat(
+      header('웰리빙', '오늘을 잘 살기'),
+      [subtabs('home'),
+        h('p', { class: 'hint', text: '마음이 가는 곳에서 가볍게 시작해 보아요.' }),
+        h('section', { class: 'card-today' }, todayBox)],
+      weeklyReview(),
+      [h('section', { class: 'card-today' }, recentBox)]
+    ));
+  }
   // ---------- B2 실천 선택 ----------
 
   // 내가 고른 가치와 보기 방식은 이 기기에만 저장한다.
@@ -207,7 +240,7 @@
       if (el) el.focus();
     }
 
-    var nodes = [h('h1', { tabindex: '-1', text: area.name }), h('p', { class: 'tagline', text: hasValues ? '소중히 여기는 가치부터 골라 보세요.' : '오늘 해 볼 작은 일을 골라 보세요.' }), subtabs('home')];
+    var nodes = [h('h1', { tabindex: '-1', text: area.name }), h('p', { class: 'tagline', text: hasValues ? '소중히 여기는 가치부터 골라 보세요.' : '오늘 해 볼 작은 일을 골라 보세요.' }), subtabs('area')];
 
     if (hasValues) {
       var isCustom = !!chosen && chosen.indexOf('custom:') === 0;
@@ -333,7 +366,7 @@
       nodes.push(h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/rest', text: '오늘은 쉬기' })]));
     }
 
-    nodes.push(h('a', { class: 'back', href: BASE, text: '← 웰리빙으로' }));
+    nodes.push(h('a', { class: 'back', href: '#/', text: '← 홈으로' }));
     show(nodes);
   }
   function viewRest() {
@@ -560,10 +593,10 @@
       body.push(h('h2', { text: g[0] }));
       body.push(h('ul', { class: 'items' }, g[1].map(planItem)));
     });
-    if (!all.length) body.push(h('p', { class: 'placeholder', text: '아직 담은 계획이 없어요. 「추천」에서 마음이 가는 일을 골라 보세요.' }));
+    if (!all.length) body.push(h('p', { class: 'placeholder', text: '아직 담은 계획이 없어요. 홈에서 마음이 가는 영역을 골라 보세요.' }));
 
     show([].concat(header('나의 계획', '결과는 내가 정해요. 하지 않기로 해도 괜찮아요.'), [subtabs('plan')], body,
-      [h('a', { class: 'btn', href: BASE, text: '실천 고르러 가기' })]));
+      [h('a', { class: 'btn', href: '#/', text: '실천 고르러 가기' })]));
   }
 
   // ---------- B5 경험 기록 ----------

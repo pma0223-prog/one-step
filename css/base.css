@@ -345,3 +345,14 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .logo-sm{width:54px;height:54px}
 .hello-big{font-size:1.1rem;font-weight:700}
 .bell img{display:block;width:auto;height:36px}
+
+/* 웰리빙 홈: 오늘의 상태 */
+.state-list{list-style:none;margin:0 0 8px;padding:0;display:grid;gap:8px}
+.state-row{display:flex;align-items:center;gap:12px;min-height:64px;padding:8px 12px 8px 10px;background:#fbfaf4;border-radius:18px}
+.state-row .row-text{flex:1;min-width:0;display:flex;flex-direction:column}
+.state-row small{color:#6a756a;font-weight:400;font-size:.9rem}
+.state-pill{flex:none;padding:4px 12px;border-radius:14px;font-size:.9rem;font-weight:700;background:#ece8dc;color:#5a5a4a}
+.state-pill.st-done{background:#dcf0dc;color:#2b6e3a}
+.state-pill.st-partial{background:#fdf0c8;color:#7a5a00}
+.state-pill.st-hold{background:#e3e8f4;color:#3d4bb0}
+.state-pill.st-skipped{background:#eee7ee;color:#6b4a6b}
