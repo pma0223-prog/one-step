@@ -203,35 +203,29 @@
   };
   var demoState = { month: 'now', numbers: true };
 
+  // 꽃밭: 배경 그림 위에, 한 걸음마다 그 영역 색의 꽃 그림이 한 송이씩 핀다.
   function demoGarden(steps) {
-    var svg = '<svg viewBox="0 0 320 210" role="img" aria-label="' + (steps.length ? '한 걸음마다 꽃이 한 송이씩 핀 꽃밭' : '씨앗이 심어진 빈 밭') + '" focusable="false">' +
-      '<defs><linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff0fb"/><stop offset="1" stop-color="#fff6dc"/></linearGradient></defs>' +
-      '<rect width="320" height="210" fill="url(#gsky)"/>' +
-      '<circle cx="268" cy="38" r="18" fill="#fbd66a"/>' +
-      '<path d="M0 120c60-26 120-22 180-6s100 6 140-8v104H0z" fill="#b9dfa8"/>' +
-      '<path d="M0 150c70-16 150-12 220-2s70 0 100-6v68H0z" fill="#8ecb86"/>';
+    var box = h('div', { class: 'demo-garden', role: 'img', 'aria-label': steps.length ? '한 걸음마다 꽃이 한 송이씩 핀 꽃밭' : '씨앗이 심어진 빈 밭' });
     if (!steps.length) {
-      svg += '<ellipse cx="160" cy="168" rx="12" ry="8" fill="#8a5a3a"/><path d="M160 162v-10M160 154c-6 0-9-4-9-8 6 0 9 3 9 8zM160 154c6 0 9-4 9-8-6 0-9 3-9 8z" stroke="#4d9a64" stroke-width="2" fill="#6cc080"/>';
-    } else {
-      var spots = steps.map(function (st, i) {
-        return { st: st, x: 22 + ((i * 61 + 17) % 276), y: 122 + ((i * 37 + 11) % 74) };
-      }).sort(function (a, b) { return a.y - b.y; });
-      spots.forEach(function (o) {
-        var c = DEMO_COLORS[o.st[0]] || '#f09a62', r = 7 + (o.y - 122) / 18, x = o.x, y = o.y;
-        svg += '<path d="M' + x + ' ' + (y + r) + 'v' + (r + 8) + '" stroke="#4f9a5a" stroke-width="2"/>';
-        for (var k = 0; k < 5; k++) {
-          var a = k * 72 * Math.PI / 180;
-          svg += '<circle cx="' + (x + Math.sin(a) * r).toFixed(1) + '" cy="' + (y - Math.cos(a) * r).toFixed(1) + '" r="' + (r * 0.62).toFixed(1) + '" fill="' + c + '" stroke="#fff" stroke-width="1"/>';
-        }
-        svg += '<circle cx="' + x + '" cy="' + y + '" r="' + (r * 0.45).toFixed(1) + '" fill="#fff3b0"/>';
-      });
+      box.appendChild(h('span', { class: 'garden-seed', 'aria-hidden': 'true', text: '🌱' }));
+      return box;
     }
-    svg += '</svg>';
-    var box = h('div', { class: 'demo-garden' });
-    box.innerHTML = svg;
+    var spots = steps.map(function (st, i) {
+      return { area: st[0], x: 9 + ((i * 61 + 17) % 82), y: 50 + ((i * 37 + 11) % 40) };
+    }).sort(function (a, b) { return a.y - b.y; });
+    spots.forEach(function (o) {
+      var size = 34 + (o.y - 50) * 0.7;
+      var f = h('span', { class: 'garden-flower', 'aria-hidden': 'true' }, [
+        h('span', { class: 'garden-stem' }),
+        h('img', { src: 'images/flower-' + o.area + '.webp?v=1', alt: '', width: '128', height: '128', decoding: 'async' })
+      ]);
+      f.style.left = o.x + '%';
+      f.style.top = o.y + '%';
+      f.style.width = Math.round(size) + 'px';
+      box.appendChild(f);
+    });
     return box;
   }
-
   function viewDemo() {
     var m = DEMO_MONTHS[demoState.month];
     function pick(key) {

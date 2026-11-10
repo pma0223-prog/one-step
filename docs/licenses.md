@@ -17,3 +17,7 @@
 ## 알림 종 아이콘 (images/bell.webp)
 - 사용자(박민아)가 ChatGPT로 만든 종 그림. 위 그림들과 같은 조건으로 쓴다.
 
+
+## 꽃밭 그림 (images/flower-*.webp, images/garden-bg.webp)
+- 사용자(박민아)가 ChatGPT로 만든 꽃 그림(6색)과 초원 배경을 잘라 줄여서 사용. 위 그림들과 같은 조건으로 쓴다.
+

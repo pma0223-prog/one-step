@@ -373,3 +373,10 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .demo-garden svg{display:block;width:100%;height:auto;stroke:none;fill:none}
 .demo-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
 .demo-item{display:flex;align-items:center;gap:12px;min-height:52px;padding:6px 12px 6px 8px;background:#fbfaf4;border-radius:16px;font-weight:600}
+
+/* 꽃밭: 배경 그림 + 영역 색 꽃 그림 */
+.demo-garden{position:relative;aspect-ratio:16/10;margin:8px 0;border-radius:20px;overflow:hidden;line-height:0;background:#8fd0f2 url(../images/garden-bg.webp?v=1) center bottom/cover no-repeat}
+.garden-flower{position:absolute;display:block;transform:translate(-50%,-50%)}
+.garden-flower img{display:block;width:100%;height:auto;position:relative;filter:drop-shadow(0 2px 2px rgba(30,80,30,.3))}
+.garden-stem{position:absolute;left:50%;top:70%;width:4px;height:70%;margin-left:-2px;background:#4f9a5a;border-radius:2px}
+.garden-seed{position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);font-size:2.4rem}
