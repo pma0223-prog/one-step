@@ -273,3 +273,22 @@ h1{font-size:1.5rem}
 .nature-quote{font-weight:600;font-size:1rem}
 #wd-root .subtabs a{flex:1;display:flex;align-items:center;justify-content:center;min-height:52px;background:none;border:0;border-bottom:4px solid transparent;border-radius:0;box-shadow:none;margin-bottom:-2px;font-size:1rem;color:var(--muted);text-decoration:none}
 #wd-root .subtabs a[aria-current="page"]{color:#2f5aa0;border-bottom-color:#3b82d6}
+
+/* 글자 위계: 제목은 진하고 크게, 설명은 가늘고 연하게. 영역 색을 제목에 맞춘다 */
+#wl-root{--accent:#2f6b3c;--accent-soft:#e6f4e6}
+#wd-root{--accent:#2f5aa0;--accent-soft:#e3ecf7}
+#lg-root{--accent:#6b3f8a;--accent-soft:#f1e8f5}
+#screen-settings{--accent:#46604a}
+.page-head h1{font-weight:800;font-size:1.35rem;color:var(--accent,var(--ink))}
+.page-head .tagline{font-weight:400;color:#5a655a}
+h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
+.menu-text strong,.item-title,.card-today h2{font-weight:800}
+.menu-text small,.small,.hint,.tip-text small,.menu-card small{font-weight:400;color:#6a756a}
+.hero p,.hero-photo p{font-weight:800;color:var(--accent,#24402c)}
+.nature-quote{font-weight:700;color:var(--accent,#34523a)}
+.subtabs a{font-weight:500}
+.subtabs a[aria-current="page"]{font-weight:800}
+#wl-root .subtabs a[aria-current="page"],#wd-root .subtabs a[aria-current="page"],#lg-root .subtabs a[aria-current="page"]{color:var(--accent);border-bottom-color:var(--accent)}
+.btn,.chip{font-weight:700}
+.pick-row .row-text{font-weight:700}
+.panel h2,.card-today h2{color:var(--accent,var(--ink))}
