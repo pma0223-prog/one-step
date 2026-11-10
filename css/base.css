@@ -420,5 +420,6 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .cover-pick img{width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:8px;display:block}
 .cover-pick[aria-pressed="true"]{border-color:#2f6b3a;color:#2f6b3a;box-shadow:0 0 0 2px #2f6b3a33}
 
-/* 홈 위쪽 띠 그림(시작 화면 사진을 작게) */
-.home-banner{display:block;width:100%;height:128px;margin:14px 0 0;object-fit:cover;object-position:50% 78%;border-radius:20px;box-shadow:0 4px 12px rgba(60,80,60,.16)}
+/* 홈 위쪽: 풍경 그림 안에 마크와 앱 이름 */
+.home-hero{align-items:flex-start;min-height:150px;padding:14px 14px 0;border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%),#f9e3c0 url(../images/home-banner.webp?v=1) center top/cover no-repeat;box-shadow:0 4px 12px rgba(60,80,60,.16)}
+.home-hero .brand-name{text-shadow:0 1px 3px rgba(255,255,255,.9)}
