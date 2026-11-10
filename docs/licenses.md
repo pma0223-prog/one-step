@@ -13,3 +13,7 @@
 ## 영역 아이콘 (images/icon-living, icon-dying, icon-legacy.webp)
 - 사용자(박민아)가 ChatGPT로 만든 3D풍 그림 3장(웰리빙·웰다잉·마음의 유산). 원본을 256px로 줄여 사용. 위 자연 그림과 같은 조건으로 쓴다.
 
+
+## 알림 종 아이콘 (images/bell.webp)
+- 사용자(박민아)가 ChatGPT로 만든 종 그림. 위 그림들과 같은 조건으로 쓴다.
+
