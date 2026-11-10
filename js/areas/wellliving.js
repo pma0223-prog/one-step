@@ -211,13 +211,12 @@
       return box;
     }
     var spots = steps.map(function (st, i) {
-      return { area: st[0], x: 9 + ((i * 61 + 17) % 82), y: 50 + ((i * 37 + 11) % 40) };
+      return { area: st[0], x: 10 + ((i * 5 + 2) % 12) * 6.8, y: 68 + ((i * 7 + 1) % 3) * 12 };
     }).sort(function (a, b) { return a.y - b.y; });
     spots.forEach(function (o) {
-      var size = 34 + (o.y - 50) * 0.7;
+      var size = 36 + (o.y - 50) * 0.8;
       var f = h('span', { class: 'garden-flower', 'aria-hidden': 'true' }, [
-        h('span', { class: 'garden-stem' }),
-        h('img', { src: 'images/flower-' + o.area + '.webp?v=1', alt: '', width: '128', height: '128', decoding: 'async' })
+        h('img', { src: 'images/flower-' + o.area + '.webp?v=2', alt: '', width: '128', height: '128', decoding: 'async' })
       ]);
       f.style.left = o.x + '%';
       f.style.top = o.y + '%';
