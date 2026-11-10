@@ -24,3 +24,5 @@
 
 - (수정) 꽃 그림은 사용자가 ChatGPT로 만든 줄기 달린 꽃 6장으로 교체함(2026-11-10).
 
+
+- images/cover-sakura|forest|sky|sunset.webp: 책 표지 그림 4장. 사용자가 ChatGPT로 만든 이미지.

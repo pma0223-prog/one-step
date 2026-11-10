@@ -412,3 +412,5 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .tool-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:96px;padding:12px 6px;text-align:center;font-weight:700;line-height:1.3;color:#2f6b3a;text-decoration:none;background:#fff;border:2px solid #2f6b3a;border-radius:18px;overflow-wrap:anywhere}
 .tool-btn:active{background:#eef6ef}
 .tool-ico{font-size:1.8rem;line-height:1}
+
+.bk-cover-card{display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 16px;width:88%;background:rgba(255,255,255,.8);border-radius:16px;box-shadow:0 2px 10px rgba(0,0,0,.12)}

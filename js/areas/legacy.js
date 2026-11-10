@@ -447,7 +447,7 @@
   // 내가 고른 기록을 날짜순으로 엮어 책장처럼 넘겨 보고, 인쇄(PDF 저장)나 글 파일로 저장한다.
   // 책은 어디에도 저장·전송하지 않고, 화면에서 만들어 바로 내려받는다.
 
-  var BOOK_COLORS = [['벚꽃', '#f4b6c2', '#7a2e45'], ['숲', '#a9d6b0', '#1f5a33'], ['하늘', '#a8cdf0', '#1d4e7d'], ['노을', '#f7c99a', '#7a3d10']];
+  var BOOK_COLORS = [['벚꽃', '#f4b6c2', '#7a2e45', 'sakura'], ['숲', '#a9d6b0', '#1f5a33', 'forest'], ['하늘', '#a8cdf0', '#1d4e7d', 'sky'], ['노을', '#f7c99a', '#7a3d10', 'sunset']];
   var bookDraft = { ids: [], color: 0, title: '나의 소중한 기록', page: 0 };
   var BOOK_ICON = { story: '📖 ', kept: '🌷 ', letter: '💌 ' };
 
@@ -469,7 +469,7 @@
     var c = BOOK_COLORS[color];
     var inner;
     if (pg.kind === 'cover') {
-      inner = [h('div', { class: 'bk-cover-art', 'aria-hidden': 'true', text: '🌷' }), h('h2', { class: 'bk-title', text: title }), h('p', { class: 'bk-sub', text: '지은이 · 나' })];
+      inner = [h('div', { class: 'bk-cover-card' }, [h('div', { class: 'bk-cover-art', 'aria-hidden': 'true', text: '🌷' }), h('h2', { class: 'bk-title', text: title }), h('p', { class: 'bk-sub', text: '지은이 · 나' })])];
     } else if (pg.kind === 'toc') {
       inner = [h('h2', { class: 'bk-h', text: '차례' }), h('ol', { class: 'bk-toc' }, list.map(function (e) {
         var p = bookEntryPage(e);
@@ -481,7 +481,7 @@
       inner = [h('p', { class: 'bk-date', text: pg.p.icon + dateLabel(pg.p.date) }), h('h2', { class: 'bk-h', text: pg.p.heading }), h('p', { class: 'pre bk-body', text: pg.p.body })];
     }
     var node = h('div', { class: 'bk-page' + (pg.kind === 'cover' ? ' bk-is-cover' : '') }, inner);
-    if (pg.kind === 'cover') { node.style.background = c[1]; node.style.color = c[2]; }
+    if (pg.kind === 'cover') { node.style.background = c[1] + ' url(images/cover-' + c[3] + '.webp?v=1) center/cover no-repeat'; node.style.color = c[2]; }
     return node;
   }
 
