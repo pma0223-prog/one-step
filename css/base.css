@@ -1,4 +1,4 @@
-﻿:root{
+:root{
   --bg:#fbf8ef;--ink:#1f2d1f;--muted:#4d5a4d;--card:#fff;--line:#c9c4b2;
   --green:#3f8a4f;--green-dark:#2f6b3c;
   --living:#e3f1e3;--dying:#e3ecf7;--legacy:#f1e8f5;
@@ -422,4 +422,5 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 
 /* 홈 위쪽: 풍경 그림 안에 마크와 앱 이름 */
 .home-hero{align-items:flex-start;min-height:150px;padding:14px 14px 0;border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,0) 55%),#f9e3c0 url(../images/home-banner.webp?v=1) center top/cover no-repeat;box-shadow:0 4px 12px rgba(60,80,60,.16)}
-.home-hero .brand-name{text-shadow:0 1px 3px rgba(255,255,255,.9)}
+.home-hero .brand-name{-webkit-text-stroke:5px #fff;paint-order:stroke fill;text-shadow:0 1px 4px rgba(255,255,255,.9)}
+.home-hero .logo-sm{border:3px solid #fff;box-sizing:border-box;box-shadow:0 2px 8px rgba(0,0,0,.2)}
