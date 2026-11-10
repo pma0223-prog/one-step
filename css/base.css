@@ -229,3 +229,16 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outlin
 #lg-root .subtabs,#wd-root .subtabs{display:flex;gap:0;border-bottom:2px solid var(--line)}
 #lg-root .subtabs a{flex:1;background:none;border:0;border-bottom:4px solid transparent;border-radius:0;box-shadow:none;margin-bottom:-2px}
 #lg-root .subtabs a[aria-current="page"]{background:none;color:#6b3f8a;border-bottom-color:#9a72b0}
+
+/* 모든 화면 공통 꾸밈 */
+.hero-living{background:linear-gradient(135deg,#e6f4e6,#fdf3d8)}
+.hero-settings{background:linear-gradient(135deg,#eef2ee,#e3ecf5)}
+.panel{border:2px dashed #e6dcc8}
+.item{border-left:6px solid #a8d5ae}
+#lg-root .item{border-left-color:#c9a9dc}
+#wd-root .item{border-left-color:#a9c4ec}
+.placeholder{background:#fffaf0;border-color:#f1d9b5}
+h2{display:flex;align-items:center;gap:6px}
+.btn{box-shadow:0 3px 8px rgba(47,111,60,.18)}
+.btn-outline{box-shadow:none}
+#wl-root .subtabs,#lg-root .subtabs{margin-top:0}

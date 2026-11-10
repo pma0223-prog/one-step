@@ -56,6 +56,26 @@
     settings: '<g fill="#7f9a86"><rect x="21" y="3" width="6" height="9" rx="2"/><rect x="21" y="36" width="6" height="9" rx="2"/><rect x="3" y="21" width="9" height="6" rx="2"/><rect x="36" y="21" width="9" height="6" rx="2"/><g transform="rotate(45 24 24)"><rect x="21" y="3" width="6" height="9" rx="2"/><rect x="21" y="36" width="6" height="9" rx="2"/><rect x="3" y="21" width="9" height="6" rx="2"/><rect x="36" y="21" width="9" height="6" rx="2"/></g><circle cx="24" cy="24" r="14"/></g><circle cx="24" cy="24" r="6" fill="#fff"/>'
   };
 
+  // 화면 제목별 작은 그림과 따뜻한 한마디(배너). 장식이라 화면 읽기 프로그램은 건너뛴다.
+  var HEROES = {
+    '웰리빙': ['☀️', '마음이 가는 곳에서 가볍게 시작해 보세요.'],
+    '나의 계획': ['🗓️', '오늘 해 볼 일들이에요. 못 해도 괜찮아요.'],
+    '남긴 경험': ['📔', '해 본 일과 느낀 점이 차곡차곡 쌓여요.'],
+    '돌아보기': ['🔍', '잘했는지가 아니라, 나에게 맞았는지만 살펴봐요.'],
+    '돌아보기를 남겼어요': ['🎉', '여기까지 해 본 것만으로도 충분해요.'],
+    '오늘은 쉬어요': ['🛌', '쉬는 것도 오늘의 좋은 선택이에요.'],
+    '생각 정리 질문': ['💭', '답하고 싶은 것만, 짧게 적어도 괜찮아요.'],
+    '여기까지 왔어요': ['🌼', '천천히 잘 해 오셨어요.'],
+    '내가 남긴 답': ['📝', '내가 적어 둔 생각들이에요.'],
+    '정리하고 싶은 일': ['📋', '하고 싶은 일만 골라 체크해 보세요.'],
+    '상의할 질문': ['💬', '가까운 사람과 나누고 싶은 이야기를 골라 보세요.'],
+    '공식 기관과 도움': ['🏛️', '필요할 때 도움받을 곳을 모아 두었어요.'],
+    '기록 가져오기': ['📥', '내가 고른 기록만 복사해 와요.'],
+    '초안 만들기': ['✏️', '남긴 기록을 모아 글로 정리해 드려요.'],
+    '초안': ['📜', '마음에 들게 고쳐서 쓰세요.'],
+    '파일로 내보내기': ['📦', '내 기록을 파일로 간직해요.'],
+    '내 데이터와 설정': ['🧺', '글자 크기, 알림, 파일 보관을 여기서 정해요.']
+  };
   function icon(key, className) {
     var span = h('span', { class: className || 'head-icon', 'aria-hidden': 'true' });
     span.innerHTML = '<svg viewBox="0 0 48 48">' + (ICONS[key] || '') + '</svg>';
@@ -76,6 +96,12 @@
     text.appendChild(title);
     if (sub) text.appendChild(sub);
     head.appendChild(text);
+    var hero = HEROES[title.textContent];
+    if (hero && !root.querySelector('.hero')) {
+      var b = h('div', { class: 'hero hero-' + theme }, [h('span', { class: 'hero-art', 'aria-hidden': 'true', text: hero[0] }), h('p', { text: hero[1] })]);
+      var after = head.nextElementSibling && head.nextElementSibling.classList.contains('subtabs') ? head.nextElementSibling : head;
+      after.parentNode.insertBefore(b, after.nextSibling);
+    }
   }
 
   global.OneStep = global.OneStep || {};
