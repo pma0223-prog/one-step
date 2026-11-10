@@ -160,7 +160,7 @@
       list.length
         ? h('ul', { class: 'items' }, list.map(function (e) { return entryItem(e, cfg.edit ? cfg.edit(e) : null, rerender); }))
         : h('p', { class: 'placeholder', text: cfg.empty }),
-      h('div', { class: 'row' }, [h('a', { class: 'btn', href: cfg.add[1], text: cfg.add[0] })]),
+      h('div', { class: 'row' }, [h('a', { class: 'btn', href: cfg.add[1], text: cfg.add[0] }), type === 'kept' ? h('a', { class: 'btn btn-outline', href: BASE + '/book', text: '📚 책으로 만들기' }) : null]),
       h('div', { class: 'panel' }, [
         h('h2', { text: '모아서 정리하기' }),
         h('p', { class: 'small', text: '기록은 내가 정하기 전에는 어디에도 보내지 않아요.' }),
@@ -438,6 +438,75 @@
     ]);
   }
 
+  // ---------- 시연: 소중한 기록을 책 한 권으로 ----------
+  // 예시 기록으로만 보여 주며 아무것도 저장하지 않는다.
+
+  var BOOK_COLORS = [['벚꽃', '#f4b6c2', '#7a2e45'], ['숲', '#a9d6b0', '#1f5a33'], ['하늘', '#a8cdf0', '#1d4e7d'], ['노을', '#f7c99a', '#7a3d10']];
+  var BOOK_SAMPLE = [
+    ['story', '2026-03-12', '처음 걸어 본 아침 산책', '해 본 일: 동네 공원을 20분 걸었어요.\n그때의 느낌: 바람이 시원하고 마음이 가벼웠어요.\n배운 점: 시작이 작아도 괜찮다는 것.'],
+    ['kept', '2026-05-02', '고마웠던 순간', '오랜만에 친구가 안부 전화를 해 줬다. 별말 없이도 하루가 따뜻해졌다.'],
+    ['letter', '2026-07-21', '딸에게', '바쁜 날에도 밥은 챙겨 먹으렴. 네가 웃으면 나도 힘이 나.'],
+    ['kept', '2026-09-09', '마음에 남은 말', '"천천히 가도 멈추지만 않으면 된다."']
+  ];
+  var bookState = { color: 0, page: 0, title: '나의 소중한 기록' };
+
+  function viewBook() {
+    var pages = [];
+    var c = BOOK_COLORS[bookState.color];
+    pages.push({ cover: true });
+    pages.push({ toc: true });
+    BOOK_SAMPLE.forEach(function (s) { pages.push({ s: s }); });
+    pages.push({ end: true });
+    if (bookState.page > pages.length - 1) bookState.page = 0;
+    var pg = pages[bookState.page];
+
+    function again(sel) {
+      viewBook();
+      var el = root.querySelector(sel);
+      if (el) el.focus();
+    }
+
+    var inner;
+    if (pg.cover) {
+      inner = [h('div', { class: 'bk-cover-art', 'aria-hidden': 'true', text: '🌷' }), h('h2', { class: 'bk-title', text: bookState.title }), h('p', { class: 'bk-sub', text: '지은이 · 나' })];
+    } else if (pg.toc) {
+      inner = [h('h2', { class: 'bk-h', text: '차례' }), h('ol', { class: 'bk-toc' }, BOOK_SAMPLE.map(function (s, i) {
+        return h('li', {}, [h('span', { text: s[2] }), h('span', { class: 'bk-dots', text: dateLabel(s[1]) })]);
+      }))];
+    } else if (pg.end) {
+      inner = [h('p', { class: 'bk-end', text: '여기까지 읽어 주셔서 고맙습니다.' }), h('p', { class: 'bk-sub', text: dateLabel('2026-11-10') + ' 엮음' })];
+    } else {
+      inner = [h('p', { class: 'bk-date', text: (pg.s[0] === 'letter' ? '💌 ' : pg.s[0] === 'story' ? '📖 ' : '🌷 ') + dateLabel(pg.s[1]) }), h('h2', { class: 'bk-h', text: pg.s[2] }), h('p', { class: 'pre bk-body', text: pg.s[3] })];
+    }
+
+    var chips = BOOK_COLORS.map(function (col, i) {
+      return h('button', { type: 'button', class: 'chip', 'data-c': String(i), 'aria-pressed': bookState.color === i ? 'true' : 'false', text: col[0], on: { click: function () { bookState.color = i; again('[data-c="' + i + '"]'); } } });
+    });
+    var titleIn = h('input', { type: 'text', id: 'bk-title', value: bookState.title, maxlength: '30' });
+    titleIn.addEventListener('input', function () { bookState.title = titleIn.value || '나의 소중한 기록'; var el = root.querySelector('.bk-title'); if (el) el.textContent = bookState.title; });
+
+    var book = h('div', { class: 'bk-page' + (pg.cover ? ' bk-is-cover' : ''), role: 'group', 'aria-label': '책 ' + (bookState.page + 1) + '쪽 / ' + pages.length + '쪽' }, inner);
+    if (pg.cover) { book.style.background = c[1]; book.style.color = c[2]; }
+
+    show([
+      h('h1', { tabindex: '-1', text: '책으로 만들기' }),
+      h('p', { class: 'notice', text: '예시 화면이에요. 지금은 예시 기록으로만 보여 드려요. 아무것도 저장되지 않아요.' }),
+      h('p', { class: 'small', text: '소중한 기록에서 내가 고른 글을 모아 한 권의 책처럼 엮어요. 표지 색과 제목을 정하고, 책장을 넘겨 볼 수 있어요.' }),
+      h('div', { class: 'chips', role: 'group', 'aria-label': '표지 색' }, chips),
+      h('label', { for: 'bk-title', text: '책 제목' }), titleIn,
+      book,
+      h('div', { class: 'row bk-nav' }, [
+        h('button', { type: 'button', class: 'btn btn-outline', text: '← 이전', disabled: bookState.page === 0, on: { click: function () { bookState.page--; again('.bk-nav .btn:last-child'); } } }),
+        h('span', { class: 'small', 'aria-live': 'polite', text: (bookState.page + 1) + ' / ' + pages.length }),
+        h('button', { type: 'button', class: 'btn btn-outline', text: '다음 →', disabled: bookState.page === pages.length - 1, on: { click: function () { bookState.page++; again('.bk-nav .btn:last-child'); } } })
+      ]),
+      h('div', { class: 'panel' }, [
+        h('h2', { text: '완성하면' }),
+        h('p', { class: 'small', text: '실제 기능에서는 「PDF로 저장(인쇄)」와 「글 파일로 저장」을 고를 수 있어요. 만든 책은 내가 정하기 전에는 어디에도 보내지 않아요.' })
+      ]),
+      backLinks(true)
+    ]);
+  }
   // ---------- 경로 분기 ----------
 
   function go(hash) { location.hash = hash; }
@@ -454,6 +523,7 @@
       else if (a === 'import') viewImport(parts[1]);
       else if (a === 'draft') viewDraft();
       else if (a === 'export') viewExport();
+      else if (a === 'book') viewBook();
       else viewTab('story');
       OneStep.ui.decorate(root, 'legacy', 'legacy');
       var heading = root.querySelector('h1');
