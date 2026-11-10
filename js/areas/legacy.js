@@ -525,10 +525,10 @@
     });
     var titleIn = h('input', { type: 'text', id: 'bk-title', maxlength: '30', value: bookDraft.title });
     var chips = BOOK_COLORS.map(function (col, i) {
-      return h('button', { type: 'button', class: 'chip', 'data-c': String(i), 'aria-pressed': bookDraft.color === i ? 'true' : 'false', text: col[0], on: { click: function () {
+      return h('button', { type: 'button', class: 'cover-pick', 'data-c': String(i), 'aria-pressed': bookDraft.color === i ? 'true' : 'false', on: { click: function () {
         bookDraft.color = i;
         chips.forEach(function (b, j) { b.setAttribute('aria-pressed', i === j ? 'true' : 'false'); });
-      } } });
+      } } }, [h('img', { src: 'images/thumb-' + col[3] + '.webp', alt: '', width: '120', height: '160' }), h('span', { text: col[0] })]);
     });
     var err = h('p', { class: 'small error', role: 'alert' });
     show([
@@ -536,9 +536,9 @@
       h('p', { class: 'small', text: '내가 고른 기록을 날짜순으로 엮어 한 권의 책처럼 넘겨 볼 수 있어요. 글은 고친 것 없이 그대로 담겨요. 책은 내가 저장하기 전에는 어디에도 남지 않아요.' }),
       h('h2', { text: '1. 책에 담을 기록 고르기' }),
       picker.ul,
-      h('h2', { text: '2. 제목과 표지 색' }),
+      h('h2', { text: '2. 제목과 표지 그림' }),
       h('label', { for: 'bk-title', text: '책 제목' }), titleIn,
-      h('div', { class: 'chips', role: 'group', 'aria-label': '표지 색' }, chips),
+      h('div', { class: 'cover-picks', role: 'group', 'aria-label': '표지 그림' }, chips),
       err,
       h('div', { class: 'row' }, [h('button', { type: 'button', class: 'btn', text: '책 만들기', on: { click: function () {
         var chosen = picker.chosen();
