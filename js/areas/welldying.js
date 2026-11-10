@@ -66,14 +66,14 @@
     window.scrollTo(0, 0);
   }
 
-  function menuCard(id, iconKey, href, title, sub) {
-    return h('a', { class: 'big b-' + id, href: href }, [
-      OneStep.ui.icon(iconKey, 'big-icon'),
-      h('span', { text: title }),
-      h('small', { text: sub })
+  // 허브의 메뉴 줄: 작은 그림 + 제목 + 설명 + 화살표
+  function menuCard(id, emoji, href, title, sub) {
+    return h('a', { class: 'menu-card m-' + id, href: href }, [
+      h('span', { class: 'menu-ico', 'aria-hidden': 'true', text: emoji }),
+      h('span', { class: 'menu-text' }, [h('strong', { text: title }), h('small', { text: sub })]),
+      h('span', { class: 'chev', 'aria-hidden': 'true', text: '›' })
     ]);
   }
-
   function backLinks(toHub) {
     return h('div', { class: 'row' }, [
       toHub ? h('a', { class: 'back', href: BASE, text: '← 웰다잉으로' }) : null,
@@ -122,13 +122,17 @@
     show([
       h('h1', { tabindex: '-1', text: '웰다잉' }),
       h('p', { class: 'tagline', text: '내 속도로, 원하는 만큼만 해요.' }),
-      h('nav', { class: 'big-grid', 'aria-label': '웰다잉 메뉴' }, [
-        menuCard('ask', 'ask', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
-        menuCard('list', 'list', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
-        menuCard('discuss', 'relation', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
-        menuCard('help', 'help', BASE + '/help', '공식 기관과 도움', '공식 제도 안내와 마음이 힘들 때')
+      h('div', { class: 'hero hero-dying' }, [
+        h('span', { class: 'hero-art', 'aria-hidden': 'true', text: '🌱' }),
+        h('p', { text: '지금부터 천천히, 나의 속도로 생각해 봐요.' })
       ]),
-      h('a', { class: 'text-link', href: BASE + '/answers', text: '내가 남긴 답 보기' }),
+      h('nav', { class: 'menu-list', 'aria-label': '웰다잉 메뉴' }, [
+        menuCard('ask', '💭', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
+        menuCard('list', '📋', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
+        menuCard('discuss', '💬', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
+        menuCard('help', '🏛️', BASE + '/help', '공식 기관과 도움', '공식 제도 안내와 마음이 힘들 때')
+      ]),
+      h('p', { class: 'quote', text: '“ 천천히 해도 괜찮아요. 오늘 한 걸음이면 충분해요. ”' }),      h('a', { class: 'text-link', href: BASE + '/answers', text: '내가 남긴 답 보기' }),
       backLinks(false)
     ]);
   }

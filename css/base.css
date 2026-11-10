@@ -209,3 +209,23 @@ input:focus-visible,textarea:focus-visible{outline:3px solid var(--green);outlin
 .card-today{background:linear-gradient(#fff,#fffaf2);border:2px dashed #f1d9b5}
 .card-today h2::after{content:"";display:block;width:56px;height:5px;margin-top:6px;border-radius:3px;background:repeating-linear-gradient(90deg,#f2a65a 0 8px,#f7d794 8px 14px)}
 .tip-card{border:2px dashed #cfe5cf}
+
+/* 웰다잉·마음의 유산: 시안처럼 배너 + 메뉴 줄 */
+.hero{display:flex;align-items:center;gap:14px;margin:0 0 14px;padding:18px 16px;border-radius:26px;box-shadow:var(--shadow);border:2px dashed rgba(255,255,255,.85)}
+.hero p{margin:0;font-weight:700;font-size:1.05rem;line-height:1.5}
+.hero-art{flex:none;display:grid;place-items:center;width:64px;height:64px;font-size:2.2rem;background:#fff;border-radius:50%;box-shadow:0 3px 8px rgba(60,80,60,.12);font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+.hero-dying{background:linear-gradient(135deg,#e3f3e4,#cfe6f7)}
+.hero-legacy{background:linear-gradient(135deg,#fdeef0,#efe3f7)}
+.menu-list{display:grid;gap:12px;margin:0 0 14px}
+.menu-card{display:flex;align-items:center;gap:14px;min-height:80px;padding:12px 14px;background:var(--card);border-radius:24px;box-shadow:var(--shadow);color:inherit;text-decoration:none;border:2px solid transparent}
+.menu-card:hover,.menu-card:focus-visible{border-color:var(--green);outline:none}
+.menu-ico{flex:none;display:grid;place-items:center;width:56px;height:56px;font-size:1.8rem;border-radius:18px;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif}
+.m-ask .menu-ico{background:#dde9fa}.m-list .menu-ico{background:#dff1e2}.m-discuss .menu-ico{background:#fdeef0}.m-help .menu-ico{background:#fde4d4}
+.menu-text{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.menu-text strong{font-size:1.1rem}
+.menu-text small{color:var(--muted);font-size:.9rem}
+.menu-card .chev{font-size:1.8rem;color:var(--muted)}
+.quote{margin:16px 0;padding:14px 16px;text-align:center;font-weight:600;color:#2f4a6a;background:#eaf1fb;border-radius:20px}
+#lg-root .subtabs,#wd-root .subtabs{display:flex;gap:0;border-bottom:2px solid var(--line)}
+#lg-root .subtabs a{flex:1;background:none;border:0;border-bottom:4px solid transparent;border-radius:0;box-shadow:none;margin-bottom:-2px}
+#lg-root .subtabs a[aria-current="page"]{background:none;color:#6b3f8a;border-bottom-color:#9a72b0}

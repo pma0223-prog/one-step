@@ -126,7 +126,7 @@
   function entryItem(e, editHref, rerender) {
     var lines = entryLines(e);
     var li = h('li', { class: 'item' }, [
-      h('p', { class: 'small', text: dateLabel(e.date) + (e.type === 'kept' ? ' · ' + e.origin : '') }),
+      h('p', { class: 'small', text: (e.type === 'story' ? '📖 ' : e.type === 'letter' ? '💌 ' : '🌷 ') + dateLabel(e.date) + (e.type === 'kept' ? ' · ' + e.origin : '') }),
       h('p', { class: 'pre', text: lines.join('\n') }),
       h('div', { class: 'row' }, [
         editHref ? h('a', { class: 'btn btn-outline', href: editHref, text: '고치기' }) : null,
@@ -146,9 +146,9 @@
   function viewTab(type) {
     var list = byType(type);
     var cfg = {
-      story: { sub: '살면서 해 본 경험과 깨달음을 남겨요.', empty: '아직 쓴 이야기가 없어요. 성공한 일뿐 아니라 망설임이나 달라진 생각도 괜찮아요.', add: ['이야기 쓰기', BASE + '/story/new'], edit: function (e) { return BASE + '/story/' + e.id; } },
-      kept: { sub: '웰리빙과 웰다잉에서 내가 고른 기록이에요.', empty: '아직 가져온 기록이 없어요. 가져오기는 내가 고른 것만 복사해 와요.', add: ['웰리빙·웰다잉에서 가져오기', BASE + '/import'], edit: null },
-      letter: { sub: '소중한 사람에게 전하고 싶은 말을 적어 둬요.', empty: '아직 적은 말이 없어요. 보내지 않고 간직만 해도 괜찮아요.', add: ['전하고 싶은 말 쓰기', BASE + '/letter/new'], edit: function (e) { return BASE + '/letter/' + e.id; } }
+      story: { art: '✒️', hero: '지나온 시간 속에서 내가 소중하게 여긴 것들을 기록해 보세요.', sub: '살면서 해 본 경험과 깨달음을 남겨요.', empty: '아직 쓴 이야기가 없어요. 성공한 일뿐 아니라 망설임이나 달라진 생각도 괜찮아요.', add: ['이야기 쓰기', BASE + '/story/new'], edit: function (e) { return BASE + '/story/' + e.id; } },
+      kept: { art: '🖼️', hero: '고마웠던 순간과 마음에 남은 기록을 모아 두어요.', sub: '웰리빙과 웰다잉에서 내가 고른 기록이에요.', empty: '아직 가져온 기록이 없어요. 가져오기는 내가 고른 것만 복사해 와요.', add: ['웰리빙·웰다잉에서 가져오기', BASE + '/import'], edit: null },
+      letter: { art: '💌', hero: '소중한 사람에게 전하고 싶은 말을 천천히 적어 보세요.', sub: '소중한 사람에게 전하고 싶은 말을 적어 둬요.', empty: '아직 적은 말이 없어요. 보내지 않고 간직만 해도 괜찮아요.', add: ['전하고 싶은 말 쓰기', BASE + '/letter/new'], edit: function (e) { return BASE + '/letter/' + e.id; } }
     }[type];
     function rerender() { viewTab(type); }
 
@@ -156,6 +156,7 @@
       h('h1', { tabindex: '-1', text: '마음의 유산' }),
       h('p', { class: 'tagline', text: cfg.sub }),
       tabs(type),
+      h('div', { class: 'hero hero-legacy' }, [h('span', { class: 'hero-art', 'aria-hidden': 'true', text: cfg.art }), h('p', { text: cfg.hero })]),
       list.length
         ? h('ul', { class: 'items' }, list.map(function (e) { return entryItem(e, cfg.edit ? cfg.edit(e) : null, rerender); }))
         : h('p', { class: 'placeholder', text: cfg.empty }),
