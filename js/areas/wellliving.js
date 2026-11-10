@@ -3,7 +3,7 @@
 (function () {
   var storage = OneStep.storage;
   var BASE = '#/wellliving';
-  var PAGE = 3;
+  var PAGE = 5;
 
   var STATUS = [
     { id: 'done', label: '완료' },
@@ -90,9 +90,9 @@
 
   function subtabs(current) {
     var items = [
-      ['home', '추천', BASE],
+      ['home', '추천 실천', BASE],
       ['plan', '나의 계획', BASE + '/plan'],
-      ['records', '경험 기록', BASE + '/records']
+      ['records', '기록', BASE + '/records']
     ];
     return h('nav', { class: 'subtabs', 'aria-label': '웰리빙 메뉴' }, items.map(function (it) {
       return h('a', { href: it[2], 'aria-current': it[0] === current ? 'page' : false, text: it[1] });
@@ -195,7 +195,7 @@
       if (el) el.focus();
     }
 
-    var nodes = [h('h1', { tabindex: '-1', text: area.name }), h('p', { class: 'tagline', text: hasValues ? '소중히 여기는 가치부터 골라 보세요.' : '오늘 해 볼 작은 일을 골라 보세요.' })];
+    var nodes = [h('h1', { tabindex: '-1', text: area.name }), h('p', { class: 'tagline', text: hasValues ? '소중히 여기는 가치부터 골라 보세요.' : '오늘 해 볼 작은 일을 골라 보세요.' }), subtabs('home')];
 
     if (hasValues) {
       var isCustom = !!chosen && chosen.indexOf('custom:') === 0;
@@ -243,20 +243,47 @@
         : null;
       if (head) nodes.push(h('h2', { text: head }));
 
-      nodes.push(h('ul', { class: 'pick-list' }, shown.map(function (it) {
+      var msg = h('p', { class: 'small error', role: 'alert' });
+      var rows = shown.map(function (it, idx) {
+        var cb = h('input', { type: 'checkbox', id: 'pk-' + idx, value: it.id });
         return h('li', {}, [
-          h('a', { class: 'pick', href: BASE + '/set/' + area.id + '/' + it.id + (prefs.light ? '/small' : ''), 'data-key': key }, [
-            h('span', { text: prefs.light ? it.small : it.text }),
-            h('small', { text: '고르기' })
+          h('label', { class: 'pick-row', for: 'pk-' + idx }, [
+            OneStep.ui.icon(area.id, 'row-icon b-' + area.id),
+            h('span', { class: 'row-text', text: prefs.light ? it.small : it.text }),
+            cb
           ])
         ]);
-      })));
+      });
+
+      function checkedItems() {
+        var ids = [].slice.call(root.querySelectorAll('.pick-row input:checked')).map(function (c) { return c.value; });
+        return shown.filter(function (it) { return ids.indexOf(it.id) !== -1; });
+      }
+
+      var addBtn = h('button', { type: 'button', class: 'btn btn-big', text: '선택한 실천을 오늘의 계획에 담기', on: { click: function () {
+        var picked = checkedItems();
+        if (!picked.length) { msg.textContent = '담고 싶은 실천을 먼저 골라 주세요. 오늘은 쉬어도 괜찮아요.'; return; }
+        var list = plans();
+        picked.forEach(function (it) {
+          list.push({
+            id: newId(), areaId: areaId, actionId: it.id, value: valueLabelFor(areaId), text: prefs.light ? it.small : it.text,
+            date: todayStr(), time: '', memo: '', status: 'planned', createdAt: new Date().toISOString()
+          });
+        });
+        if (saveOrWarn('plans', list, msg)) go(BASE + '/plan');
+      } } });
+
+      var detailBtn = h('button', { type: 'button', class: 'btn btn-outline', text: '시간·메모를 정해서 담기', on: { click: function () {
+        var picked = checkedItems();
+        if (!picked.length) { msg.textContent = '담고 싶은 실천을 먼저 골라 주세요.'; return; }
+        go(BASE + '/set/' + area.id + '/' + picked[0].id + (prefs.light ? '/small' : ''));
+      } } });
 
       var more = pool.length > PAGE
         ? h('button', { type: 'button', class: 'btn btn-outline', text: '다른 제안 보기', on: { click: function () {
             offsets[areaId] = (start + PAGE) % pool.length;
             viewArea(areaId);
-            var first = root.querySelector('.pick');
+            var first = root.querySelector('.pick-row input');
             if (first) first.focus();
           } } })
         : null;
@@ -269,14 +296,27 @@
       } } });
       light.setAttribute('data-light', '1');
 
+      nodes.push(h('section', { class: 'card-today' }, [
+        h('h2', { text: '오늘의 작은 실천' }),
+        h('p', { class: 'lead', text: hasValues && label ? '「' + label + '」에 어울리는 일부터 시작해 보세요.' : '지금 할 수 있는 작은 일부터 시작해 보세요.' }),
+        h('ul', { class: 'pick-rows' }, rows),
+        h('div', { class: 'chips' }, [light])
+      ]));
+      nodes.push(msg);
+      nodes.push(addBtn);
       nodes.push(h('div', { class: 'row' }, [
-        more,
+        detailBtn, more,
         h('a', { class: 'btn btn-outline', href: BASE + '/set/' + area.id + '/custom', text: '직접 입력' }),
         h('a', { class: 'btn btn-outline', href: BASE + '/rest', text: '오늘은 쉬기' })
       ]));
-      nodes.push(h('p', { class: 'small', text: '시간이나 몸이 힘든 날에는 더 가벼운 버전으로 볼 수 있어요.' }));
-      nodes.push(h('div', { class: 'chips' }, [light]));
-    } else {
+      nodes.push(h('a', { class: 'tip-card', href: BASE + '/plan' }, [
+        OneStep.ui.icon(area.id, 'row-icon b-' + area.id),
+        h('span', { class: 'tip-text' }, [
+          h('strong', { text: '작게 시작해도 충분해요' }),
+          h('small', { text: '고른 실천은 「나의 계획」에서 언제든 확인해요' })
+        ]),
+        h('span', { class: 'chev', 'aria-hidden': 'true', text: '›' })
+      ]));    } else {
       nodes.push(h('p', { class: 'placeholder', text: '가치를 하나 고르면, 그 가치에 어울리는 작은 실천을 보여 드려요. 정하기 어렵다면 「모두 보기」를 눌러도 돼요.' }));
       nodes.push(h('div', { class: 'row' }, [h('a', { class: 'btn btn-outline', href: BASE + '/rest', text: '오늘은 쉬기' })]));
     }
