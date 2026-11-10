@@ -183,6 +183,72 @@
       [h('section', { class: 'card-today' }, recentBox)]
     ));
   }
+  // ---------- 시연: 영역별 결과 그래프 (예시 데이터, 내 기록과 무관) ----------
+  // 실제 앱에는 연결하지 않고 주소로만 연다. 내 기록은 읽지도 쓰지도 않는다.
+
+  var DEMO = [
+    { id: 'health', name: '건강 관리', n: 5, color: '#ef7f78' },
+    { id: 'dream', name: '꿈과 목표', n: 1, color: '#9a6ad0' },
+    { id: 'mind', name: '마음과 감사', n: 3, color: '#5cb06c' },
+    { id: 'money', name: '나의 자산 관리', n: 0, color: '#f0b43a' },
+    { id: 'relation', name: '관계와 소통', n: 2, color: '#7b86d6' },
+    { id: 'share', name: '나눔과 가치', n: 2, color: '#f09a62' }
+  ];
+
+  function demoBars() {
+    var max = 0;
+    DEMO.forEach(function (d) { if (d.n > max) max = d.n; });
+    return h('ul', { class: 'demo-bars' }, DEMO.map(function (d) {
+      var bar = h('span', { class: 'demo-bar' });
+      bar.style.width = (d.n ? Math.max(8, Math.round(d.n / max * 100)) : 0) + '%';
+      bar.style.background = d.color;
+      return h('li', { class: 'demo-row' }, [
+        h('span', { class: 'demo-name' }, [h('span', { 'aria-hidden': 'true', text: AREA_EMOJI[d.id] + ' ' }), d.name]),
+        h('span', { class: 'demo-track' }, [bar]),
+        h('span', { class: 'demo-num', text: d.n ? d.n + '번' : '쉼' })
+      ]);
+    }));
+  }
+
+  function demoFlower() {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = '<svg viewBox="0 0 280 280" role="img" aria-label="영역별 꽃잎 그림. 해 본 영역의 꽃잎에만 색이 들어 있어요." focusable="false">';
+    DEMO.forEach(function (d, i) {
+      var on = d.n > 0;
+      svg += '<g transform="rotate(' + (i * 60) + ' 140 140)">' +
+        '<ellipse cx="140" cy="78" rx="27" ry="50" fill="' + (on ? d.color : '#ece8dc') + '" fill-opacity="' + (on ? '.85' : '.7') + '" stroke="#fff" stroke-width="3"/></g>';
+      var a = (i * 60 - 90) * Math.PI / 180;
+      var x = 140 + Math.cos(a) * 0 , y = 0;
+      var ang = i * 60 * Math.PI / 180;
+      x = 140 + Math.sin(ang) * 80; y = 140 - Math.cos(ang) * 80;
+      svg += '<text x="' + x.toFixed(1) + '" y="' + (y + 8).toFixed(1) + '" font-size="26" fill="#333" text-anchor="middle" opacity="' + (on ? '1' : '.4') + '">' + AREA_EMOJI[d.id] + '</text>';
+    });
+    svg += '<circle cx="140" cy="140" r="26" fill="#fff8dc" stroke="#fff" stroke-width="3"/><text x="140" y="147" font-size="22" fill="#333" text-anchor="middle">🌼</text></svg>';
+    var box = h('div', { class: 'demo-flower' });
+    box.innerHTML = svg;
+    return box;
+  }
+
+  function viewDemo() {
+    show([].concat(
+      header('결과 한눈에 보기', '시연 화면'),
+      [subtabs('demo'),
+        h('p', { class: 'notice', text: '예시 화면이에요. 내 기록과는 관계없고, 아무것도 저장하지 않아요. 이 모양을 실제 앱에 넣을지 의논하려고 만든 시연이에요.' }),
+        h('section', { class: 'card-today' }, [
+          h('h2', { text: '① 막대로 보기' }),
+          h('p', { class: 'small', text: '이번 주에 영역마다 해 본 실천이에요.' }),
+          demoBars(),
+          h('p', { class: 'small', text: '한눈에 비교되지만, 적은 영역이 부족해 보일 수 있어요.' })
+        ]),
+        h('section', { class: 'card-today' }, [
+          h('h2', { text: '② 꽃잎으로 보기' }),
+          h('p', { class: 'small', text: '이번 주에 한 걸음 내디딘 영역에 색이 들어와요. 숫자와 크기 차이는 없어요.' }),
+          demoFlower(),
+          h('p', { class: 'lead', text: '이번 주에도 여러 갈래로 한 걸음씩 걸었어요.' })
+        ]),
+        h('a', { class: 'back', href: BASE, text: '← 웰리빙으로' })]
+    ));
+  }
   // ---------- B2 실천 선택 ----------
 
   // 내가 고른 가치와 보기 방식은 이 기기에만 저장한다.
@@ -752,6 +818,7 @@
       if (!a) viewHome();
       else if (a === 'area') viewArea(parts[1]);
       else if (a === 'rest') viewRest();
+      else if (a === 'demo') viewDemo();
       else if (a === 'set') viewSet(parts[1], parts[2], parts[3]);
       else if (a === 'plan') viewPlan();
       else if (a === 'check') viewCheck(parts[1]);

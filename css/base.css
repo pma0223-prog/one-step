@@ -356,3 +356,14 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .state-pill.st-partial{background:#fdf0c8;color:#7a5a00}
 .state-pill.st-hold{background:#e3e8f4;color:#3d4bb0}
 .state-pill.st-skipped{background:#eee7ee;color:#6b4a6b}
+
+/* 시연: 영역별 결과 그래프 */
+.demo-bars{list-style:none;margin:8px 0;padding:0;display:grid;gap:10px}
+.demo-row{display:grid;grid-template-columns:7.6em 1fr 2.4em;align-items:center;gap:8px;font-size:.95rem}
+.demo-name{font-weight:700}
+.demo-track{display:block;height:16px;background:#f0ece0;border-radius:10px;overflow:hidden}
+.demo-bar{display:block;height:100%;border-radius:10px}
+.demo-num{text-align:right;color:#5a655a;font-weight:600}
+.demo-flower{max-width:300px;margin:6px auto}
+.demo-flower svg{display:block;width:100%;height:auto;stroke:none;fill:none}
+.demo-row{grid-template-columns:9.4em 1fr 2.2em}
