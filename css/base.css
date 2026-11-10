@@ -339,3 +339,8 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .settings-btn .chev{font-size:1.2rem;color:#9aa39a}
 .settings-btn:hover{border-color:#b9b5a4}
 .settings-btn{width:fit-content;margin-left:auto;margin-right:auto}
+
+/* 홈 위쪽 글씨 비율 조정 */
+.brand-name{font-size:1.6rem}
+.logo-sm{width:54px;height:54px}
+.hello-big{font-size:1.1rem;font-weight:700}
