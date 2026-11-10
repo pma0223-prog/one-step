@@ -138,6 +138,73 @@
     return p.status === 'planned' ? '담아 둠' : labelOf(STATUS, p.status);
   }
 
+  // ---------- 이번 달 꽃밭 (실제 기록): 완료하거나 일부 해 본 실천 하나가 꽃 한 송이 ----------
+  // 쌓이기만 하고 줄지 않으며, 목표·비교·안 한 날 표시가 없다. 숫자는 켜고 끌 수 있다.
+
+  var homeMonth = 'now';
+
+  function monthKey(offset) {
+    var d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - offset);
+    return d.getFullYear() + '-' + OneStep.ui.pad(d.getMonth() + 1);
+  }
+
+  function monthSteps(offset) {
+    var key = monthKey(offset);
+    return plans().filter(function (p) { return (p.status === 'done' || p.status === 'partial') && String(p.date).slice(0, 7) === key; })
+      .sort(function (a, b) { return a.date.localeCompare(b.date); })
+      .map(function (p) { return [p.areaId, p.actionId, p.text]; });
+  }
+
+  function growthCards() {
+    var offset = homeMonth === 'prev' ? 1 : 0;
+    var label = offset ? '지난 달' : '이번 달';
+    var steps = monthSteps(offset);
+    var prefs = wlPrefs();
+
+    function pick(key) {
+      homeMonth = key;
+      viewHome();
+      var again = root.querySelector('[data-m="' + key + '"]');
+      if (again) again.focus();
+    }
+    var chips = ['now', 'prev'].map(function (key) {
+      return h('button', { type: 'button', class: 'chip', 'data-m': key, 'aria-pressed': homeMonth === key ? 'true' : 'false', text: key === 'now' ? '이번 달' : '지난 달', on: { click: function () { pick(key); } } });
+    });
+    var numBtn = h('button', { type: 'button', class: 'chip', 'aria-pressed': prefs.numbers ? 'true' : 'false', text: '숫자 보이기', on: { click: function () {
+      prefs.numbers = !prefs.numbers;
+      saveWlPrefs(prefs);
+      viewHome();
+      var again = root.querySelector('[data-num]');
+      if (again) again.focus();
+    } } });
+    numBtn.setAttribute('data-num', '1');
+
+    var title = !steps.length
+      ? (offset ? '지난 달에는 남긴 한 걸음이 없어요.' : '씨앗을 심었어요. 천천히 피워 가요.')
+      : (prefs.numbers ? label + ' 한 걸음 ' + steps.length + '번' : label + ' 피어난 꽃이에요');
+
+    var list = steps.length
+      ? h('ul', { class: 'demo-list' }, steps.map(function (st) {
+          return h('li', { class: 'demo-item' }, [
+            h('span', { class: 'row-icon b-' + (st[0] || 'health'), 'aria-hidden': 'true', text: EMOJI[st[1]] || AREA_EMOJI[st[0]] || '🌼' }),
+            h('span', { text: st[2] })
+          ]);
+        }))
+      : h('p', { class: 'small', text: '아직 해 본 일이 없어도 괜찮아요. 하고 싶을 때 한 걸음이면 돼요.' });
+
+    return [
+      h('div', { class: 'chips', role: 'group', 'aria-label': '달 고르기' }, chips),
+      h('section', { class: 'card-today' }, [
+        h('h2', { text: title }),
+        h('p', { class: 'small', text: '완료했거나 일부 해 본 실천 하나가 꽃 한 송이로 피어요. 쉬어도 핀 꽃은 그대로 있어요.' }),
+        demoGarden(steps),
+        h('div', { class: 'chips' }, [numBtn])
+      ]),
+      h('section', { class: 'card-today' }, [h('h2', { text: label + ' 해 본 일' }), list])
+    ];
+  }
   function viewHome() {
     var today = todayStr();
     var todays = plans().filter(function (p) { return p.date === today; })
@@ -179,6 +246,7 @@
       [subtabs('home'),
         h('p', { class: 'hint', text: '마음이 가는 곳에서 가볍게 시작해 보아요.' }),
         h('section', { class: 'card-today' }, todayBox)],
+      growthCards(),
       weeklyReview(),
       [h('section', { class: 'card-today' }, recentBox)]
     ));
@@ -210,13 +278,13 @@
       box.appendChild(h('span', { class: 'garden-seed', 'aria-hidden': 'true', text: '🌱' }));
       return box;
     }
-    var spots = steps.map(function (st, i) {
-      return { area: st[0], x: 10 + ((i * 5 + 2) % 12) * 6.8, y: 68 + ((i * 7 + 1) % 3) * 12 };
+    var spots = steps.slice(0, 48).map(function (st, i) {
+      return { area: st[0], x: Math.min(92, 10 + ((i * 5 + 2) % 12) * 6.8 + Math.floor(i / 12) * 2.4), y: 68 + ((i * 7 + 1) % 3) * 12 + Math.floor(i / 12) % 2 * 3 };
     }).sort(function (a, b) { return a.y - b.y; });
     spots.forEach(function (o) {
       var size = 36 + (o.y - 50) * 0.8;
       var f = h('span', { class: 'garden-flower', 'aria-hidden': 'true' }, [
-        h('img', { src: 'images/flower-' + o.area + '.webp?v=2', alt: '', width: '128', height: '128', decoding: 'async' })
+        h('img', { src: 'images/flower-' + (DEMO_COLORS[o.area] ? o.area : 'mind') + '.webp?v=2', alt: '', width: '128', height: '128', decoding: 'async' })
       ]);
       f.style.left = o.x + '%';
       f.style.top = o.y + '%';
@@ -280,7 +348,7 @@
   // 내가 고른 가치와 보기 방식은 이 기기에만 저장한다.
   function wlPrefs() {
     var p = storage.get('settings', {}).wl || {};
-    return { values: p.values || {}, light: !!p.light };
+    return { values: p.values || {}, light: !!p.light, numbers: p.numbers !== false };
   }
 
   function saveWlPrefs(p) {
