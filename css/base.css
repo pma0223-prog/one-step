@@ -294,3 +294,34 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
 .panel h2,.card-today h2{color:var(--accent,var(--ink))}
 .m-estate .menu-ico{background:#fdefc9}.m-funeral .menu-ico{background:#fde4ef}
 .th-living{background:linear-gradient(135deg,#fff9e0,#fdeeb4)}
+
+/* 웰리빙 여섯 영역: 영역마다 진한 대표 색 (흰 글씨 대비 4.5 이상) */
+#wl-root[data-theme="health"]{--accent:#b3322f;--accent-btn:#b3322f}
+#wl-root[data-theme="dream"]{--accent:#6a3aa2;--accent-btn:#6a3aa2}
+#wl-root[data-theme="mind"]{--accent:#2b6e3a;--accent-btn:#2b6e3a}
+#wl-root[data-theme="money"]{--accent:#8a5a00;--accent-btn:#8a5a00}
+#wl-root[data-theme="relation"]{--accent:#3d4bb0;--accent-btn:#3d4bb0}
+#wl-root[data-theme="share"]{--accent:#b04a12;--accent-btn:#b04a12}
+#wl-root[data-theme="living"]{--accent:#7a5a00;--accent-btn:#2f6b3c}
+#wl-root .btn:not(.btn-outline):not(.btn-danger){background:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .btn-outline{color:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .chip[aria-pressed="true"]{background:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .lead,#wl-root .pick-row small,#wl-root .back,#wl-root .text-link{color:var(--accent,var(--green-dark))}
+#wl-root .card-today .lead{color:var(--accent)}
+#wl-root .pick-row input{accent-color:var(--accent-btn,var(--green-dark))}
+#wl-root .pick-row:has(input:checked){border-color:var(--accent-btn,var(--green))}
+
+/* 웰리빙 여섯 영역: 영역마다 진한 대표 색 */
+#wl-root[data-theme="health"]{--accent:#b3322f;--accent-btn:#b3322f}
+#wl-root[data-theme="dream"]{--accent:#6a3aa2;--accent-btn:#6a3aa2}
+#wl-root[data-theme="mind"]{--accent:#2b6e3a;--accent-btn:#2b6e3a}
+#wl-root[data-theme="money"]{--accent:#8a5a00;--accent-btn:#8a5a00}
+#wl-root[data-theme="relation"]{--accent:#3d4bb0;--accent-btn:#3d4bb0}
+#wl-root[data-theme="share"]{--accent:#b04a12;--accent-btn:#b04a12}
+#wl-root[data-theme="living"]{--accent:#7a5a00;--accent-btn:#2f6b3c}
+#wl-root .btn:not(.btn-outline):not(.btn-danger){background:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .btn-outline{color:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .chip[aria-pressed="true"]{background:var(--accent-btn,var(--green-dark));border-color:var(--accent-btn,var(--green-dark))}
+#wl-root .back,#wl-root .text-link,#wl-root .card-today .lead{color:var(--accent,var(--green-dark))}
+#wl-root .pick-row input{accent-color:var(--accent-btn,var(--green-dark))}
+#wl-root .pick-row:has(input:checked){border-color:var(--accent-btn,var(--green))}

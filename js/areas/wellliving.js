@@ -120,6 +120,7 @@
   function show(nodes) {
     root.textContent = '';
     nodes.forEach(function (n) { if (n) root.appendChild(n); });
+    root.setAttribute('data-theme', currentHead);
     OneStep.ui.decorate(root, currentHead, currentHead);
   }
 
