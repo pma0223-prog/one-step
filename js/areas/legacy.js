@@ -141,6 +141,10 @@
     return li;
   }
 
+  function toolLink(path, icon, label) {
+    return h('a', { class: 'tool-btn', href: BASE + path }, [h('span', { class: 'tool-ico', 'aria-hidden': 'true', text: icon }), h('span', { text: label })]);
+  }
+
   // ---------- D1 유산 홈 (세 탭) ----------
 
   function viewTab(type) {
@@ -164,10 +168,10 @@
       h('div', { class: 'panel' }, [
         h('h2', { text: '모아서 정리하기' }),
         h('p', { class: 'small', text: '기록은 내가 정하기 전에는 어디에도 보내지 않아요.' }),
-        h('div', { class: 'row' }, [
-          h('a', { class: 'btn btn-outline', href: BASE + '/draft', text: '초안 만들기' }),
-          h('a', { class: 'btn btn-outline', href: BASE + '/book', text: '📚 책으로 만들기' }),
-          h('a', { class: 'btn btn-outline', href: BASE + '/export', text: '파일로 내보내기' })
+        h('div', { class: 'tool-grid' }, [
+          toolLink('/draft', '✏️', '초안 만들기'),
+          toolLink('/book', '📚', '책으로 만들기'),
+          toolLink('/export', '💾', '파일로 내보내기')
         ])
       ]),
       backLinks(false)

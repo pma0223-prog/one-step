@@ -406,3 +406,9 @@ h2{font-weight:800;color:var(--accent,var(--ink));font-size:1.1rem}
   #bk-print .bk-page{aspect-ratio:auto;min-height:90vh;max-width:none;margin:0;box-shadow:none;border:0;border-radius:0;overflow:visible;page-break-after:always;break-after:page;animation:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 @media screen{#bk-print{display:none}}
+
+/* 모아서 정리하기 버튼 3개: 같은 크기, 아이콘 위·글자 아래 */
+.tool-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.tool-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:96px;padding:12px 6px;text-align:center;font-weight:700;line-height:1.3;color:#2f6b3a;text-decoration:none;background:#fff;border:2px solid #2f6b3a;border-radius:18px;overflow-wrap:anywhere}
+.tool-btn:active{background:#eef6ef}
+.tool-ico{font-size:1.8rem;line-height:1}
