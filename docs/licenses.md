@@ -28,3 +28,5 @@
 - images/cover-sakura|forest|sky|sunset.webp: 책 표지 그림 4장. 사용자가 ChatGPT로 만든 이미지.
 
 - images/home-banner.webp: 홈 위쪽 풍경 그림. 사용자가 ChatGPT로 만든 이미지.
+
+- images/splash.jpg(시작 화면 사진), images/logo-192.png(로고): 사용자가 ChatGPT로 만든 이미지.
