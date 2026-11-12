@@ -132,6 +132,7 @@
       wdTabs('home'),
       OneStep.ui.photoHero('nature-1', ['지금부터 천천히,', '나의 속도로 생각해 봐요.']),
       h('nav', { class: 'menu-list', 'aria-label': '웰다잉 메뉴' }, [
+        menuCard('today', '🌅', BASE + '/today', '오늘이 마지막이라면', '하고 싶은 마음을 오늘의 한 걸음으로'),
         menuCard('ask', '💭', BASE + '/ask/0', '생각 정리 질문', '한 번에 하나씩, 건너뛰어도 돼요'),
         menuCard('list', '📋', BASE + '/list', '정리하고 싶은 일', '내가 정한 일을 체크리스트로'),
         menuCard('discuss', '💬', BASE + '/discuss', '상의할 질문', '가족이나 전문가와 나눌 이야기'),
@@ -141,6 +142,85 @@
       ]),
       h('p', { class: 'quote', text: '“ 천천히 해도 괜찮아요. 오늘 한 걸음이면 충분해요. ”' }),      h('a', { class: 'text-link', href: BASE + '/answers', text: '내가 남긴 답 보기' }),
       backLinks(false)
+    ]);
+  }
+
+  // ---------- 오늘이 마지막이라면 → 웰리빙 한 걸음 ----------
+  // 질문 하나를 보여 주고, 고른 마음을 오늘 할 수 있는 작은 한 걸음으로 이어 준다.
+  // 앱이 답을 정하지 않는다. 제안 문장은 내가 고쳐 쓸 수 있고, 쉬어가는 문이 항상 있다.
+
+  var TODAY_OPTS = [
+    { id: 'words', emoji: '💌', label: '전하고 싶은 말이 있어요', area: 'relation', area_name: '관계와 소통', step: '고마운 사람에게 안부 문자 한 줄 보내기' },
+    { id: 'place', emoji: '🧭', label: '가고 싶은 곳이 있어요', area: 'dream', area_name: '꿈과 목표', step: '가고 싶은 곳을 한 군데 적어 보기' },
+    { id: 'food', emoji: '🍚', label: '먹고 싶은 게 있어요', area: 'health', area_name: '건강 관리', step: '좋아하는 음식을 천천히 맛보며 먹기' },
+    { id: 'tidy', emoji: '🗂️', label: '정리하고 싶은 게 있어요', area: 'money', area_name: '나의 자산 관리', step: '서랍이나 서류 한 칸만 정리하기' },
+    { id: 'share', emoji: '🤲', label: '나누고 싶은 게 있어요', area: 'share', area_name: '나눔과 가치', step: '쓰지 않는 물건 하나 필요한 사람에게 주기' },
+    { id: 'thanks', emoji: '🌱', label: '그냥 고마운 마음이 들어요', area: 'mind', area_name: '마음과 감사', step: '오늘 고마웠던 일 한 가지 적어 보기' }
+  ];
+
+  function todayOpt(id) {
+    var found = null;
+    TODAY_OPTS.forEach(function (o) { if (o.id === id) found = o; });
+    return found;
+  }
+
+  function viewToday(optId) {
+    var opt = todayOpt(optId);
+    if (opt) return viewTodayStep(opt);
+    var cards = TODAY_OPTS.map(function (o) {
+      return h('li', {}, [
+        h('a', { class: 'pick today-pick', href: BASE + '/today/' + o.id }, [
+          h('span', { text: o.emoji + '  ' + o.label })
+        ])
+      ]);
+    });
+    show([
+      h('h1', { tabindex: '-1', text: '오늘이 마지막이라면' }),
+      h('p', { class: 'tagline', text: '정답 없이, 마음 가는 대로 골라 보세요.' }),
+      wdTabs('home'),
+      h('div', { class: 'panel' }, [
+        h('p', { class: 'lead', text: '오늘이 마지막이라면, 누구에게 무슨 말을 하고 싶으세요?' }),
+        h('p', { class: 'small', text: '떠오르는 마음을 하나 골라 보세요. 고른 마음을 오늘 할 수 있는 작은 한 걸음으로 이어 드려요.' })
+      ]),
+      h('ul', { class: 'pick-list' }, cards),
+      h('div', { class: 'row' }, [
+        h('a', { class: 'btn btn-outline', href: BASE, text: '지금은 생각하고 싶지 않아요' }),
+        h('a', { class: 'btn btn-outline', href: BASE + '/help', text: '마음이 힘들다면' })
+      ]),
+      h('p', { class: 'small', text: '천천히, 언제든 멈춰도 괜찮아요. 이 선택은 저장되지 않고, 담기를 눌러야만 계획에 남아요.' }),
+      backLinks(true)
+    ]);
+  }
+
+  function viewTodayStep(opt) {
+    var input = h('input', { type: 'text', id: 't-step', maxlength: '80', value: opt.step });
+    var msg = h('p', { class: 'small error', role: 'alert' });
+    show([
+      h('h1', { tabindex: '-1', text: opt.emoji + ' ' + opt.label }),
+      h('p', { class: 'tagline', text: '그 마음을 오늘 할 수 있는 크기로 줄여 봐요.' }),
+      h('form', { novalidate: true, on: { submit: function (e) {
+        e.preventDefault();
+        var text = input.value.trim();
+        if (!text) { msg.textContent = '한 줄만 적어 주세요.'; input.focus(); return; }
+        var list = storage.get('plans', []);
+        list.push({
+          id: ui.newId(), areaId: opt.area, actionId: 'custom', value: '', text: text,
+          date: ui.todayStr(), time: '', memo: '웰다잉 「오늘이 마지막이라면」에서 시작', status: 'planned', createdAt: new Date().toISOString()
+        });
+        if (storage.set('plans', list)) go('#/wellliving/plan');
+        else msg.textContent = '저장하지 못했어요. 「내 데이터와 설정」에서 내보내기를 해 두세요.';
+      } } }, [
+        h('p', { text: '「' + opt.area_name + '」의 오늘 한 걸음으로 이런 건 어때요? 마음에 맞게 고쳐도 돼요.' }),
+        h('label', { for: 't-step', text: '오늘의 한 걸음' }), input, msg,
+        h('div', { class: 'row' }, [
+          h('button', { type: 'submit', class: 'btn', text: '오늘의 계획에 담기' }),
+          h('a', { class: 'btn btn-outline', href: BASE + '/today', text: '다른 마음 고르기' })
+        ])
+      ]),
+      h('div', { class: 'row' }, [
+        h('a', { class: 'btn btn-outline', href: BASE, text: '담지 않고 나갈래요' })
+      ]),
+      h('p', { class: 'small', text: '담으면 웰리빙의 「나의 계획」에서 실천 결과와 느낌을 남길 수 있어요. 하지 못해도 괜찮아요.' })
     ]);
   }
 
@@ -503,6 +583,7 @@
     load().then(function () {
       var a = parts[0];
       if (!a) { if (introSeen()) viewHub(); else viewIntro(); }
+      else if (a === 'today') viewToday(parts[1]);
       else if (a === 'ask') viewAsk(parts[1]);
       else if (a === 'answers') viewAnswers();
       else if (a === 'list') viewList();
